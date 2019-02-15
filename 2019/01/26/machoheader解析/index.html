@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Mach - O Header 解析 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="0x1. 头部使用 otool 命令来查看 Mach-o 头部。 命令格式为：otool -v -h 二进制文件。也可以使用 MachOView 来查看。举个栗子：从上图中可以知道 header 中包含的内容。我们可以从 xnu (路径为：EXTERNAL_HEADERS/mach-o/loader.h) 的源码中了解这些字段的定义。 1234567891011121314151617181920">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mach - O Header 解析">
+<meta property="og:url" content="http://yoursite.com/2019/01/26/machoheader解析/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="0x1. 头部使用 otool 命令来查看 Mach-o 头部。 命令格式为：otool -v -h 二进制文件。也可以使用 MachOView 来查看。举个栗子：从上图中可以知道 header 中包含的内容。我们可以从 xnu (路径为：EXTERNAL_HEADERS/mach-o/loader.h) 的源码中了解这些字段的定义。 1234567891011121314151617181920">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.imgur.com/lvGR5rh.png">
+<meta property="og:image" content="https://i.imgur.com/Nvsc6Zs.png">
+<meta property="og:updated_time" content="2019-02-15T09:26:43.045Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mach - O Header 解析">
+<meta name="twitter:description" content="0x1. 头部使用 otool 命令来查看 Mach-o 头部。 命令格式为：otool -v -h 二进制文件。也可以使用 MachOView 来查看。举个栗子：从上图中可以知道 header 中包含的内容。我们可以从 xnu (路径为：EXTERNAL_HEADERS/mach-o/loader.h) 的源码中了解这些字段的定义。 1234567891011121314151617181920">
+<meta name="twitter:image" content="https://i.imgur.com/lvGR5rh.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-machoheader解析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/26/machoheader解析/" class="article-date">
+  <time datetime="2019-01-26T06:23:18.000Z" itemprop="datePublished">2019-01-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mach - O Header 解析
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="0x1-头部"><a href="#0x1-头部" class="headerlink" title="0x1. 头部"></a>0x1. 头部</h2><p>使用 otool 命令来查看 Mach-o 头部。 命令格式为：<code>otool -v -h 二进制文件</code>。也可以使用 MachOView 来查看。<br>举个栗子：<img src="https://i.imgur.com/lvGR5rh.png" alt="屏幕快照 2019-01-23 下午5.34.32"><br>从上图中可以知道 header 中包含的内容。<br>我们可以从 <a href="https://opensource.apple.com/tarballs/xnu/" target="_blank" rel="noopener">xnu</a> (路径为：EXTERNAL_HEADERS/mach-o/loader.h) 的源码中了解这些字段的定义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * The 32-bit mach header appears at the very beginning of the object file for</span></span><br><span class="line"><span class="comment"> * 32-bit architectures.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mach_header</span> &#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	magic;		<span class="comment">/* mach magic number identifier */</span></span><br><span class="line">	<span class="keyword">cpu_type_t</span>	cputype;	<span class="comment">/* cpu specifier */</span></span><br><span class="line">	<span class="keyword">cpu_subtype_t</span>	cpusubtype;	<span class="comment">/* machine specifier */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	filetype;	<span class="comment">/* type of file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	ncmds;		<span class="comment">/* number of load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	sizeofcmds;	<span class="comment">/* the size of all the load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	flags;		<span class="comment">/* flags */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constant for the magic field of the mach_header (32-bit architectures) */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span>	MH_MAGIC	0xfeedface	<span class="comment">/* the mach magic number */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_CIGAM	0xcefaedfe	<span class="comment">/* NXSwapInt(MH_MAGIC) */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * The 64-bit mach header appears at the very beginning of object files for</span></span><br><span class="line"><span class="comment"> * 64-bit architectures.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mach_header_64</span> &#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	magic;		<span class="comment">/* mach magic number identifier */</span></span><br><span class="line">	<span class="keyword">cpu_type_t</span>	cputype;	<span class="comment">/* cpu specifier */</span></span><br><span class="line">	<span class="keyword">cpu_subtype_t</span>	cpusubtype;	<span class="comment">/* machine specifier */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	filetype;	<span class="comment">/* type of file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	ncmds;		<span class="comment">/* number of load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	sizeofcmds;	<span class="comment">/* the size of all the load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	flags;		<span class="comment">/* flags */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	reserved;	<span class="comment">/* reserved */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constant for the magic field of the mach_header_64 (64-bit architectures) */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_MAGIC_64 0xfeedfacf <span class="comment">/* the 64-bit mach magic number */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_CIGAM_64 0xcffaedfe <span class="comment">/* NXSwapInt(MH_MAGIC_64) */</span></span></span><br></pre></td></tr></table></figure>
+<p>从源码可知 header 分为 mach_header 和 mach_header_64 分别对应的32位和64位。它们的区别就是64位多了一个 reserved 字段。<br>接下来我们分析下每个字段的含义：</p>
+<ul>
+<li>magic：标志对应的架构。在32位系统中对应的值为 MH_MAGIC 或 MH_CIGAM。在64位系统中对应的值为 MH_MAGIC_64 或 MH_CIGAM_64.为什么会有两个值呢？因为有一个大端小端的概念，从他们对应的值中可知，他们对应的值恰好是相反的。iPhone 采用的是小端模式。</li>
+<li>cputype、cpusubtype：cpu的类型。</li>
+<li>filetype：文件类型，比如可执行文件、库文件、符号表文件等。具体包含以下11种：</li>
+</ul>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">    #define	MH_OBJECT	0x1		/* relocatable object file */</span><br><span class="line">#define	MH_EXECUTE	0x2		/* demand paged executable file */</span><br><span class="line">#define	MH_FVMLIB	0x3		/* fixed VM shared library file */</span><br><span class="line">#define	MH_CORE		0x4		/* core file */</span><br><span class="line">#define	MH_PRELOAD	0x5		/* preloaded executable file */</span><br><span class="line">#define	MH_DYLIB	0x6		/* dynamically bound shared library */</span><br><span class="line">#define	MH_DYLINKER	0x7		/* dynamic link editor */</span><br><span class="line">#define	MH_BUNDLE	0x8		/* dynamically bound bundle file */</span><br><span class="line">#define	MH_DYLIB_STUB	0x9		/* shared library stub for static */</span><br><span class="line">					/*  linking only, no section contents */</span><br><span class="line">#define	MH_DSYM		0xa		/* companion file with only debug */</span><br><span class="line">					/*  sections */</span><br><span class="line">#define	MH_KEXT_BUNDLE	0xb		/* x86_64 kexts */</span><br></pre></td></tr></table></figure>
+</code></pre><ul>
+<li>ncmds：命令个数</li>
+<li>sizeofcmds：所有命令的大小</li>
+<li>flags：标志位，具体为：</li>
+</ul>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">    #define	MH_NOUNDEFS	0x1		/* the object file has no undefined eferences */</span><br><span class="line">#define	MH_INCRLINK	0x2		/* the object file is the output of an incremental link against a base file and can&apos;t be link edited again */</span><br><span class="line">#define MH_DYLDLINK	0x4		/* the object file is input for the dynamic linker and can&apos;t be staticly link edited again */</span><br><span class="line">#define MH_BINDATLOAD 0x8		/* the object file&apos;s undefined references are bound by the dynamic linker when loaded. */</span><br><span class="line">#define MH_PREBOUND	0x10		/* the file has its dynamic undefined references prebound. */</span><br><span class="line">#define MH_SPLIT_SEGS	0x20		/* the file has its read-only and read-write segments split */</span><br><span class="line">#define MH_LAZY_INIT	0x40		/* the shared library init routine is to be run lazily via catching memory faults to its writeable segments (obsolete) */</span><br><span class="line">#define MH_TWOLEVEL	0x80		/* the image is using two-level name space bindings */</span><br><span class="line">#define MH_FORCE_FLAT	0x100		/* the executable is forcing all images to use flat name space bindings */</span><br><span class="line">#define MH_NOMULTIDEFS	0x200		/* this umbrella guarantees no multiple defintions of symbols in its sub-images so the two-level namespace hints can always be used. */</span><br><span class="line">#define MH_NOFIXPREBINDING 0x400	/* do not have dyld notify the prebinding agent about this executable */</span><br><span class="line">#define MH_PREBINDABLE  0x800           /* the binary is not prebound but can have its prebinding redone. only used when MH_PREBOUND is not set. */</span><br><span class="line">#define MH_ALLMODSBOUND 0x1000		/* indicates that this binary binds to all two-level namespace modules of its dependent libraries. only used when MH_PREBINDABLE and MH_TWOLEVEL are both set. */ </span><br><span class="line">#define MH_SUBSECTIONS_VIA_SYMBOLS 0x2000/* safe to divide up the sections into sub-sections via symbols for dead code stripping */</span><br><span class="line">#define MH_CANONICAL    0x4000		/* the binary has been canonicalized via the unprebind operation */</span><br><span class="line">#define MH_WEAK_DEFINES	0x8000		/* the final linked image contains external weak symbols */</span><br><span class="line">#define MH_BINDS_TO_WEAK 0x10000	/* the final linked image uses weak symbols */</span><br><span class="line">#define MH_ALLOW_STACK_EXECUTION 0x20000/* When this bit is set, all stacks in the task will be given stack execution privilege.  Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define MH_ROOT_SAFE 0x40000           /* When this bit is set, the binary declares it is safe for use in processes with uid zero */                            </span><br><span class="line">#define MH_SETUID_SAFE 0x80000         /* When this bit is set, the binary declares it is safe for use in processes when issetugid() is true */</span><br><span class="line">#define MH_NO_REEXPORTED_DYLIBS 0x100000 /* When this bit is set on a dylib,the static linker does not need to examine dependent dylibs to see if any are re-exported */</span><br><span class="line">#define	MH_PIE 0x200000			/* When this bit is set, the OS will load the main executable at a random address.  Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define	MH_DEAD_STRIPPABLE_DYLIB 0x400000 /* Only for use on dylibs.  When linking against a dylib that has this bit set, the static linker will automatically not create a LC_LOAD_DYLIB load command to the dylib if no symbols are being referenced from the dylib. */</span><br><span class="line">#define MH_HAS_TLV_DESCRIPTORS 0x800000 /* Contains a section of type S_THREAD_LOCAL_VARIABLES */</span><br><span class="line">#define MH_NO_HEAP_EXECUTION 0x1000000	/* When this bit is set, the OS wil run the main executable with a non-executable heap even on platforms (e.g. i386) that don&apos;t require it. Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define MH_APP_EXTENSION_SAFE 0x02000000 /* The code was linked for use in an application extension. */</span><br></pre></td></tr></table></figure>
+</code></pre><ul>
+<li>reserved：保留字段，存在于64位的Mach-O文件中。</li>
+</ul>
+<h2 id="0x2-fat-headers"><a href="#0x2-fat-headers" class="headerlink" title="0x2 fat headers"></a>0x2 fat headers</h2><p>在苹果的二进制文件中，有一种比较特殊的二进制文件叫Universal binary（通用二进制文件）.通用二进制文件中包含多种架构的二进制代码，并且通用二进制文件的头部相对于普通的二进制文件来说比较特殊，它增加了一个 header 既 fat headers 可以使用 <code>otool -f</code> 命令来查看。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">➜  objc otool -f Fat Binary</span><br><span class="line">Fat headers</span><br><span class="line">fat_magic 0xcafebabe</span><br><span class="line">nfat_arch 2</span><br><span class="line">architecture 0</span><br><span class="line">    cputype 12</span><br><span class="line">    cpusubtype 9</span><br><span class="line">    capabilities 0x0</span><br><span class="line">    offset 16384</span><br><span class="line">    size 65241840</span><br><span class="line">    align 2^14 (16384)</span><br><span class="line">architecture 1</span><br><span class="line">    cputype 16777228</span><br><span class="line">    cpusubtype 0</span><br><span class="line">    capabilities 0x0</span><br><span class="line">    offset 65273856</span><br><span class="line">    size 65857792</span><br><span class="line">    align 2^14 (16384)</span><br></pre></td></tr></table></figure></p>
+<p>我们可以从 <a href="https://opensource.apple.com/tarballs/xnu/" target="_blank" rel="noopener">xnu</a> (路径为：EXTERNAL_HEADERS/mach-o/fat.h) 的源码中了解这些字段的定义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAT_MAGIC	0xcafebabe</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAT_CIGAM	0xbebafeca	<span class="comment">/* NXSwapLong(FAT_MAGIC) */</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fat_header</span> &#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	magic;		<span class="comment">/* FAT_MAGIC */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	nfat_arch;	<span class="comment">/* number of structs that follow */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fat_arch</span> &#123;</span></span><br><span class="line">	<span class="keyword">cpu_type_t</span>	cputype;	<span class="comment">/* cpu specifier (int) */</span></span><br><span class="line">	<span class="keyword">cpu_subtype_t</span>	cpusubtype;	<span class="comment">/* machine specifier (int) */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	offset;		<span class="comment">/* file offset to this object file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	size;		<span class="comment">/* size of this object file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	align;		<span class="comment">/* alignment as a power of 2 */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>magic : 大段的值为FAT_MAGIC，小端的值为FAT_CIGAM。</li>
+<li>nfat_arch : 标志当前文件中包含了几种架构。</li>
+<li>cputype、cpusubtype : cpu 的类型。</li>
+<li>offset : 当前架构的偏移距离。</li>
+<li>size : 当前架构的数据大小。</li>
+<li>align : 对齐方式。</li>
+</ul>
+<p>也可以使用 MachOView 来查看，这种方式比较直观。<br> <img src="https://i.imgur.com/Nvsc6Zs.png" alt="屏幕快照 2019-01-26 下午2.50.40"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://blog.csdn.net/ce123_zhouwei/article/details/6971544" target="_blank" rel="noopener">详解大端模式和小端模式</a></li>
+<li><a href="https://opensource.apple.com/tarballs/xnu/" target="_blank" rel="noopener">xnu源码</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/26/machoheader解析/" data-id="cjs5vel2k0006jq2vh5so8deq" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/01/22/AppStoreConnectAPI使用指南/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">App Store Connect API 使用指南</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/26/machoheader解析/">Mach - O Header 解析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/AppStoreConnectAPI使用指南/">App Store Connect API 使用指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

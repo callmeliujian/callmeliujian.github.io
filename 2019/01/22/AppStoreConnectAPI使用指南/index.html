@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>App Store Connect API 使用指南 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用 App Store Connect API 非常简单只需要三步  创建密钥。 获取 JSON Web Token (JWT). 发送请求。  获取密钥 在 App Store Connect 用户和访问中选择密钥即可生成下载密钥。  注意⚠️：  创建密钥的角色必须为法务。 现在仅支持组织身份注册的开发团队申请，以个人身份注册将在不久后推出。  生成的密钥只能下载一次，请妥善保存。苹果不会保">
+<meta property="og:type" content="article">
+<meta property="og:title" content="App Store Connect API 使用指南">
+<meta property="og:url" content="http://yoursite.com/2019/01/22/AppStoreConnectAPI使用指南/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="使用 App Store Connect API 非常简单只需要三步  创建密钥。 获取 JSON Web Token (JWT). 发送请求。  获取密钥 在 App Store Connect 用户和访问中选择密钥即可生成下载密钥。  注意⚠️：  创建密钥的角色必须为法务。 现在仅支持组织身份注册的开发团队申请，以个人身份注册将在不久后推出。  生成的密钥只能下载一次，请妥善保存。苹果不会保">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.imgur.com/cGUFHUc.png">
+<meta property="og:image" content="https://i.imgur.com/AMgV6kr.png">
+<meta property="og:image" content="https://i.imgur.com/FBOnzSf.png">
+<meta property="og:image" content="https://i.imgur.com/C79cuBl.png">
+<meta property="og:image" content="https://i.imgur.com/gOW7xpi.png">
+<meta property="og:image" content="https://i.imgur.com/d6mJKLc.png">
+<meta property="og:updated_time" content="2019-02-15T09:26:43.045Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="App Store Connect API 使用指南">
+<meta name="twitter:description" content="使用 App Store Connect API 非常简单只需要三步  创建密钥。 获取 JSON Web Token (JWT). 发送请求。  获取密钥 在 App Store Connect 用户和访问中选择密钥即可生成下载密钥。  注意⚠️：  创建密钥的角色必须为法务。 现在仅支持组织身份注册的开发团队申请，以个人身份注册将在不久后推出。  生成的密钥只能下载一次，请妥善保存。苹果不会保">
+<meta name="twitter:image" content="https://i.imgur.com/cGUFHUc.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-AppStoreConnectAPI使用指南" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/22/AppStoreConnectAPI使用指南/" class="article-date">
+  <time datetime="2019-01-22T08:05:50.000Z" itemprop="datePublished">2019-01-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      App Store Connect API 使用指南
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用 App Store Connect API 非常简单只需要三步</p>
+<ol>
+<li>创建密钥。</li>
+<li>获取 JSON Web Token (JWT).</li>
+<li>发送请求。</li>
+</ol>
+<h2 id="获取密钥"><a href="#获取密钥" class="headerlink" title="获取密钥"></a>获取密钥</h2><ul>
+<li><p>在 App Store Connect 用户和访问中选择密钥即可生成下载密钥。<br><img src="https://i.imgur.com/cGUFHUc.png" alt="屏幕快照 2019-01-21 下午2.26.03"><br><img src="https://i.imgur.com/AMgV6kr.png" alt="屏幕快照 2019-01-21 下午2.26.21"><br><img src="https://i.imgur.com/FBOnzSf.png" alt="屏幕快照 2019-01-21 下午2.26.54"></p>
+</li>
+<li><p>注意⚠️：</p>
+<ul>
+<li>创建密钥的角色必须为法务。</li>
+<li><p>现在仅支持组织身份注册的开发团队申请，以个人身份注册将在不久后推出。<br><img src="https://i.imgur.com/C79cuBl.png" alt="屏幕快照 2019-01-21 下午2.35.52"></p>
+</li>
+<li><p>生成的密钥只能下载一次，请妥善保存。苹果不会保存该密钥，在点击下载API密钥的时候生成该密钥。</p>
+</li>
+<li>如果密钥丢失只能通过编辑撤销此密钥重新生成新密钥。撤销的密钥会显示30天。</li>
+</ul>
+</li>
+</ul>
+<h2 id="获取-JSON-Web-Token-JWT"><a href="#获取-JSON-Web-Token-JWT" class="headerlink" title="获取 JSON Web Token (JWT)"></a>获取 JSON Web Token (JWT)</h2><p>这里使用ruby获取 JWT.其他方式参见 <a href="https://jwt.io" target="_blank" rel="noopener">jwt.io</a>。</p>
+<ol>
+<li><p>安装jwt，如果无法安装请更换源为：<a href="https://gems.ruby-china.com" target="_blank" rel="noopener">https://gems.ruby-china.com</a></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gem install jwt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取JWT</p>
+ <figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'base64'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'jwt'</span></span><br><span class="line"></span><br><span class="line">ISSUER_ID = <span class="string">"828a67a2-29f8-4d8f-b1a6-26b123456789"</span></span><br><span class="line">KEY_ID = <span class="string">"9Q2W123456"</span></span><br><span class="line"></span><br><span class="line">private_key = OpenSSL::PKey.read(File.read(<span class="string">"/Users/nelson/key/AuthKey_9Q2W265678.p8"</span>))</span><br><span class="line"></span><br><span class="line">token = JWT.encode(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="symbol">iss:</span> ISSUER_ID,</span><br><span class="line">        <span class="symbol">exp:</span> Time.now.to_i + <span class="number">20</span> *<span class="number">60</span>,</span><br><span class="line">        <span class="symbol">aud:</span> <span class="string">"appstoreconnect-v1"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    private_key,</span><br><span class="line">    <span class="string">"ES256"</span>,</span><br><span class="line">    header_fields=&#123;</span><br><span class="line">        <span class="symbol">kid:</span> KEY_ID</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">puts token</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>* ⚠️：ISSUER_ID 为密钥页面的Issuer ID、KEY_ID 为密钥ID、private_key 为密钥路径。
+* 生成的JWT有效时间只有20分钟，20分钟后需要重新获取。
+</code></pre><ol>
+<li>执行ruby脚本获取JWT。<br><img src="https://i.imgur.com/gOW7xpi.png" alt="屏幕快照 2019-01-21 下午3.01.55"></li>
+</ol>
+<h2 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h2><p>在获取到JWT之后，需要将JWT添加到请求头中，格式为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -v -H &apos;Authorization: Bearer [signed token]&apos; </span><br><span class="line">&quot;https://api.appstoreconnect.apple.com/v1/apps&quot;</span><br></pre></td></tr></table></figure></p>
+<p>将 [signed token] 替换为你获取到的JWT。<br>举个🌰：<br><img src="https://i.imgur.com/d6mJKLc.png" alt="屏幕快照 2019-01-22 下午4.00.37"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://developer.apple.com/documentation/appstoreconnectapi" target="_blank" rel="noopener">App Store Connect API</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2018/303/" target="_blank" rel="noopener">Automating App Store Connect</a></li>
+<li><a href="https://developer.apple.com/app-store-connect/api/" target="_blank" rel="noopener">App Store Connect API Resources</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/22/AppStoreConnectAPI使用指南/" data-id="cjs5vel1x0000jq2v3bk1h4v6" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/01/26/machoheader解析/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Mach - O Header 解析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/04/基于Hikari的代码混淆实现/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">基于Hikari的代码混淆实现</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/26/machoheader解析/">Mach - O Header 解析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/AppStoreConnectAPI使用指南/">App Store Connect API 使用指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

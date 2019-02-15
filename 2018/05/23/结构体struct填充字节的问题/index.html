@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>结构体struct填充字节的问题 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="定义一个结构体 123struct test &amp;#123;    char a;&amp;#125;; 通过sizeof函数计算该结构体大大小为1byte。但是要是以下这种情况呢？ 1234struct test1 &amp;#123;    char a;    int b;&amp;#125;; 此时该结构体的大小为8byte。但是为什么是8byte而不是5byte呢？这里就涉及到了一个内存对齐的问题。那么什么是内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="结构体struct填充字节的问题">
+<meta property="og:url" content="http://yoursite.com/2018/05/23/结构体struct填充字节的问题/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="定义一个结构体 123struct test &amp;#123;    char a;&amp;#125;; 通过sizeof函数计算该结构体大大小为1byte。但是要是以下这种情况呢？ 1234struct test1 &amp;#123;    char a;    int b;&amp;#125;; 此时该结构体的大小为8byte。但是为什么是8byte而不是5byte呢？这里就涉及到了一个内存对齐的问题。那么什么是内存">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-02-15T09:26:43.090Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="结构体struct填充字节的问题">
+<meta name="twitter:description" content="定义一个结构体 123struct test &amp;#123;    char a;&amp;#125;; 通过sizeof函数计算该结构体大大小为1byte。但是要是以下这种情况呢？ 1234struct test1 &amp;#123;    char a;    int b;&amp;#125;; 此时该结构体的大小为8byte。但是为什么是8byte而不是5byte呢？这里就涉及到了一个内存对齐的问题。那么什么是内存">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-结构体struct填充字节的问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/05/23/结构体struct填充字节的问题/" class="article-date">
+  <time datetime="2018-05-23T06:42:46.000Z" itemprop="datePublished">2018-05-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      结构体struct填充字节的问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>定义一个结构体</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    char a;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过sizeof函数计算该结构体大大小为1byte。但是要是以下这种情况呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct test1 &#123;</span><br><span class="line">    char a;</span><br><span class="line">    int b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>此时该结构体的大小为8byte。但是为什么是8byte而不是5byte呢？<br>这里就涉及到了一个内存对齐的问题。那么什么是内存对齐呢？</p>
+<ul>
+<li>C语言中的基本数据类型除char外他们的内存地址都不是随机存储在内存中的：<ol>
+<li>char可以开始于任何内存地址。</li>
+<li>short（2字节）从偶数字节地址开始。</li>
+<li>int/float（4字节）从能被4整除的地址开始。</li>
+<li>long/double(8字节）从能被8整除的地址开始。</li>
+</ol>
+</li>
+</ul>
+<p>所以我们就能理解为什么test1结构体的大小为8byte了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    char a;</span><br><span class="line">    // 3 byte padding</span><br><span class="line">    int b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>因为int类型必须要以能被4整除的地址开始，所以需要在char后面添加3个字节以满足int的地址要求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    char a;</span><br><span class="line">    // 3 byte padding</span><br><span class="line">    int b;</span><br><span class="line">    char *pa;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>此时指针pa恰好满足以被8整除的地址开头所以这个结构体的大小为16byte。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    uint8_t a,b;</span><br><span class="line">    uint32_t c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>这个结构体的大小为8.因为uint32_t c，的存在所以uint8_t a 申请的内存大小为4 但是a只占了一个字节，剩余的3个字节是填充的，但是uint8_t b，是在uint8_t a之后的正好可以放在3个空白字节中，所以大小为8.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    uint8_t a;</span><br><span class="line">    uint32_t c;</span><br><span class="line">    uint8_t b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个结构体大小为12.此时b没有挨着a，先为a申请4个字节的内存，之后为c生气4个字节的内存，最后为b申请4个字节的内存。</p>
+<hr>
+<h3 id="新增内容"><a href="#新增内容" class="headerlink" title="新增内容"></a>新增内容</h3><p>在WWDC2018 whats new in LLVM中出现了一个一个新特性：#pragma pack 那么这个新特性的作用是什么呢？</p>
+<ul>
+<li><p>编译器中提供了#pragma pack(n)来设定变量以n字节对齐方式。n字节对齐就是说变量存放的起始地址的偏移量有两种情况：第一、如果n大于等于该变量所占用的字节数，那么偏移量必须满足默认的对齐方式，第二、如果n小于该变量的类型所占用的字节数，那么偏移量为n的倍数，不用满足默认的对齐方式。结构的总大小也有个约束条件，分下面两种情况：如果n大于所有成员变量类型所占用的字节数，那么结构的总大小必须为占用空间最大的变量占用的空间数的倍数；否则必须为n的倍数。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> #pragma pack (push, 4)</span><br><span class="line">struct test &#123;</span><br><span class="line"> char m1;</span><br><span class="line"> double m4;</span><br><span class="line"> int m3;</span><br><span class="line"> &#125;;</span><br><span class="line"> #pragma pack (pop)</span><br></pre></td></tr></table></figure>
+<p>  此结构体的大小为16，下面分析其存储情况，首先为m1分配空间，其偏移量为0，满足我们自己设定的对齐方式（4字节对齐），m1大小为1个字节。接着开始为m4分配空间，这时其偏移量为1，需要补足3个字节，这样使偏移量满足为n=4的倍数（因为sizeof(double)大于4）,m4占用8个字节。接着为m3分配空间，这时其偏移量为12，满足为4的倍数，m3占用4个字节。这时已经为所有成员变量分配了空间，共分配了16个字节，满足为n的倍数。如果把上面的#pragma pack(4)改为#pragma pack(8)，那么我们可以得到结构的大小为24。</p>
+</li>
+<li><p>#pragma pack(push,1)与#pragma pack(1)的区别 </p>
+<ul>
+<li>#pragma pack (n) 作用：LLVM将按照n个字节对齐。#pragma pack () 作用：取消自定义字节对齐方式。   </li>
+<li>#pragma  pack (push,1) 作用：是指把原来对齐方式设置压栈，并设新的对齐方式设置为1个字节对齐<br>#pragma pack(pop) 作用：恢复对齐状态 </li>
+</ul>
+</li>
+</ul>
+<p>附录：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">32位系统</th>
+<th style="text-align:center">64位系统</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">char</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">short</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+</tr>
+<tr>
+<td style="text-align:center">float</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">4</td>
+</tr>
+<tr>
+<td style="text-align:center">double</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">int</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">4</td>
+</tr>
+<tr>
+<td style="text-align:center">long</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">long long</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">void *</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">uint32_t</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">uint32_t</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">4</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/05/23/结构体struct填充字节的问题/" data-id="cjs5vel2a0005jq2vesdqry66" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/08/16/搭建指南/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Xcode Server 搭建指南
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/26/machoheader解析/">Mach - O Header 解析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/AppStoreConnectAPI使用指南/">App Store Connect API 使用指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

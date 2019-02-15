@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-machoheader解析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/26/machoheader解析/" class="article-date">
+  <time datetime="2019-01-26T06:23:18.000Z" itemprop="datePublished">2019-01-26</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/26/machoheader解析/">Mach - O Header 解析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="0x1-头部"><a href="#0x1-头部" class="headerlink" title="0x1. 头部"></a>0x1. 头部</h2><p>使用 otool 命令来查看 Mach-o 头部。 命令格式为：<code>otool -v -h 二进制文件</code>。也可以使用 MachOView 来查看。<br>举个栗子：<img src="https://i.imgur.com/lvGR5rh.png" alt="屏幕快照 2019-01-23 下午5.34.32"><br>从上图中可以知道 header 中包含的内容。<br>我们可以从 <a href="https://opensource.apple.com/tarballs/xnu/" target="_blank" rel="noopener">xnu</a> (路径为：EXTERNAL_HEADERS/mach-o/loader.h) 的源码中了解这些字段的定义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * The 32-bit mach header appears at the very beginning of the object file for</span></span><br><span class="line"><span class="comment"> * 32-bit architectures.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mach_header</span> &#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	magic;		<span class="comment">/* mach magic number identifier */</span></span><br><span class="line">	<span class="keyword">cpu_type_t</span>	cputype;	<span class="comment">/* cpu specifier */</span></span><br><span class="line">	<span class="keyword">cpu_subtype_t</span>	cpusubtype;	<span class="comment">/* machine specifier */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	filetype;	<span class="comment">/* type of file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	ncmds;		<span class="comment">/* number of load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	sizeofcmds;	<span class="comment">/* the size of all the load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	flags;		<span class="comment">/* flags */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constant for the magic field of the mach_header (32-bit architectures) */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span>	MH_MAGIC	0xfeedface	<span class="comment">/* the mach magic number */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_CIGAM	0xcefaedfe	<span class="comment">/* NXSwapInt(MH_MAGIC) */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * The 64-bit mach header appears at the very beginning of object files for</span></span><br><span class="line"><span class="comment"> * 64-bit architectures.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">mach_header_64</span> &#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	magic;		<span class="comment">/* mach magic number identifier */</span></span><br><span class="line">	<span class="keyword">cpu_type_t</span>	cputype;	<span class="comment">/* cpu specifier */</span></span><br><span class="line">	<span class="keyword">cpu_subtype_t</span>	cpusubtype;	<span class="comment">/* machine specifier */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	filetype;	<span class="comment">/* type of file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	ncmds;		<span class="comment">/* number of load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	sizeofcmds;	<span class="comment">/* the size of all the load commands */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	flags;		<span class="comment">/* flags */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	reserved;	<span class="comment">/* reserved */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Constant for the magic field of the mach_header_64 (64-bit architectures) */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_MAGIC_64 0xfeedfacf <span class="comment">/* the 64-bit mach magic number */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MH_CIGAM_64 0xcffaedfe <span class="comment">/* NXSwapInt(MH_MAGIC_64) */</span></span></span><br></pre></td></tr></table></figure>
+<p>从源码可知 header 分为 mach_header 和 mach_header_64 分别对应的32位和64位。它们的区别就是64位多了一个 reserved 字段。<br>接下来我们分析下每个字段的含义：</p>
+<ul>
+<li>magic：标志对应的架构。在32位系统中对应的值为 MH_MAGIC 或 MH_CIGAM。在64位系统中对应的值为 MH_MAGIC_64 或 MH_CIGAM_64.为什么会有两个值呢？因为有一个大端小端的概念，从他们对应的值中可知，他们对应的值恰好是相反的。iPhone 采用的是小端模式。</li>
+<li>cputype、cpusubtype：cpu的类型。</li>
+<li>filetype：文件类型，比如可执行文件、库文件、符号表文件等。具体包含以下11种：</li>
+</ul>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">    #define	MH_OBJECT	0x1		/* relocatable object file */</span><br><span class="line">#define	MH_EXECUTE	0x2		/* demand paged executable file */</span><br><span class="line">#define	MH_FVMLIB	0x3		/* fixed VM shared library file */</span><br><span class="line">#define	MH_CORE		0x4		/* core file */</span><br><span class="line">#define	MH_PRELOAD	0x5		/* preloaded executable file */</span><br><span class="line">#define	MH_DYLIB	0x6		/* dynamically bound shared library */</span><br><span class="line">#define	MH_DYLINKER	0x7		/* dynamic link editor */</span><br><span class="line">#define	MH_BUNDLE	0x8		/* dynamically bound bundle file */</span><br><span class="line">#define	MH_DYLIB_STUB	0x9		/* shared library stub for static */</span><br><span class="line">					/*  linking only, no section contents */</span><br><span class="line">#define	MH_DSYM		0xa		/* companion file with only debug */</span><br><span class="line">					/*  sections */</span><br><span class="line">#define	MH_KEXT_BUNDLE	0xb		/* x86_64 kexts */</span><br></pre></td></tr></table></figure>
+</code></pre><ul>
+<li>ncmds：命令个数</li>
+<li>sizeofcmds：所有命令的大小</li>
+<li>flags：标志位，具体为：</li>
+</ul>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">    #define	MH_NOUNDEFS	0x1		/* the object file has no undefined eferences */</span><br><span class="line">#define	MH_INCRLINK	0x2		/* the object file is the output of an incremental link against a base file and can&apos;t be link edited again */</span><br><span class="line">#define MH_DYLDLINK	0x4		/* the object file is input for the dynamic linker and can&apos;t be staticly link edited again */</span><br><span class="line">#define MH_BINDATLOAD 0x8		/* the object file&apos;s undefined references are bound by the dynamic linker when loaded. */</span><br><span class="line">#define MH_PREBOUND	0x10		/* the file has its dynamic undefined references prebound. */</span><br><span class="line">#define MH_SPLIT_SEGS	0x20		/* the file has its read-only and read-write segments split */</span><br><span class="line">#define MH_LAZY_INIT	0x40		/* the shared library init routine is to be run lazily via catching memory faults to its writeable segments (obsolete) */</span><br><span class="line">#define MH_TWOLEVEL	0x80		/* the image is using two-level name space bindings */</span><br><span class="line">#define MH_FORCE_FLAT	0x100		/* the executable is forcing all images to use flat name space bindings */</span><br><span class="line">#define MH_NOMULTIDEFS	0x200		/* this umbrella guarantees no multiple defintions of symbols in its sub-images so the two-level namespace hints can always be used. */</span><br><span class="line">#define MH_NOFIXPREBINDING 0x400	/* do not have dyld notify the prebinding agent about this executable */</span><br><span class="line">#define MH_PREBINDABLE  0x800           /* the binary is not prebound but can have its prebinding redone. only used when MH_PREBOUND is not set. */</span><br><span class="line">#define MH_ALLMODSBOUND 0x1000		/* indicates that this binary binds to all two-level namespace modules of its dependent libraries. only used when MH_PREBINDABLE and MH_TWOLEVEL are both set. */ </span><br><span class="line">#define MH_SUBSECTIONS_VIA_SYMBOLS 0x2000/* safe to divide up the sections into sub-sections via symbols for dead code stripping */</span><br><span class="line">#define MH_CANONICAL    0x4000		/* the binary has been canonicalized via the unprebind operation */</span><br><span class="line">#define MH_WEAK_DEFINES	0x8000		/* the final linked image contains external weak symbols */</span><br><span class="line">#define MH_BINDS_TO_WEAK 0x10000	/* the final linked image uses weak symbols */</span><br><span class="line">#define MH_ALLOW_STACK_EXECUTION 0x20000/* When this bit is set, all stacks in the task will be given stack execution privilege.  Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define MH_ROOT_SAFE 0x40000           /* When this bit is set, the binary declares it is safe for use in processes with uid zero */                            </span><br><span class="line">#define MH_SETUID_SAFE 0x80000         /* When this bit is set, the binary declares it is safe for use in processes when issetugid() is true */</span><br><span class="line">#define MH_NO_REEXPORTED_DYLIBS 0x100000 /* When this bit is set on a dylib,the static linker does not need to examine dependent dylibs to see if any are re-exported */</span><br><span class="line">#define	MH_PIE 0x200000			/* When this bit is set, the OS will load the main executable at a random address.  Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define	MH_DEAD_STRIPPABLE_DYLIB 0x400000 /* Only for use on dylibs.  When linking against a dylib that has this bit set, the static linker will automatically not create a LC_LOAD_DYLIB load command to the dylib if no symbols are being referenced from the dylib. */</span><br><span class="line">#define MH_HAS_TLV_DESCRIPTORS 0x800000 /* Contains a section of type S_THREAD_LOCAL_VARIABLES */</span><br><span class="line">#define MH_NO_HEAP_EXECUTION 0x1000000	/* When this bit is set, the OS wil run the main executable with a non-executable heap even on platforms (e.g. i386) that don&apos;t require it. Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define MH_APP_EXTENSION_SAFE 0x02000000 /* The code was linked for use in an application extension. */</span><br></pre></td></tr></table></figure>
+</code></pre><ul>
+<li>reserved：保留字段，存在于64位的Mach-O文件中。</li>
+</ul>
+<h2 id="0x2-fat-headers"><a href="#0x2-fat-headers" class="headerlink" title="0x2 fat headers"></a>0x2 fat headers</h2><p>在苹果的二进制文件中，有一种比较特殊的二进制文件叫Universal binary（通用二进制文件）.通用二进制文件中包含多种架构的二进制代码，并且通用二进制文件的头部相对于普通的二进制文件来说比较特殊，它增加了一个 header 既 fat headers 可以使用 <code>otool -f</code> 命令来查看。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">➜  objc otool -f Fat Binary</span><br><span class="line">Fat headers</span><br><span class="line">fat_magic 0xcafebabe</span><br><span class="line">nfat_arch 2</span><br><span class="line">architecture 0</span><br><span class="line">    cputype 12</span><br><span class="line">    cpusubtype 9</span><br><span class="line">    capabilities 0x0</span><br><span class="line">    offset 16384</span><br><span class="line">    size 65241840</span><br><span class="line">    align 2^14 (16384)</span><br><span class="line">architecture 1</span><br><span class="line">    cputype 16777228</span><br><span class="line">    cpusubtype 0</span><br><span class="line">    capabilities 0x0</span><br><span class="line">    offset 65273856</span><br><span class="line">    size 65857792</span><br><span class="line">    align 2^14 (16384)</span><br></pre></td></tr></table></figure></p>
+<p>我们可以从 <a href="https://opensource.apple.com/tarballs/xnu/" target="_blank" rel="noopener">xnu</a> (路径为：EXTERNAL_HEADERS/mach-o/fat.h) 的源码中了解这些字段的定义。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAT_MAGIC	0xcafebabe</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FAT_CIGAM	0xbebafeca	<span class="comment">/* NXSwapLong(FAT_MAGIC) */</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fat_header</span> &#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	magic;		<span class="comment">/* FAT_MAGIC */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	nfat_arch;	<span class="comment">/* number of structs that follow */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">fat_arch</span> &#123;</span></span><br><span class="line">	<span class="keyword">cpu_type_t</span>	cputype;	<span class="comment">/* cpu specifier (int) */</span></span><br><span class="line">	<span class="keyword">cpu_subtype_t</span>	cpusubtype;	<span class="comment">/* machine specifier (int) */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	offset;		<span class="comment">/* file offset to this object file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	size;		<span class="comment">/* size of this object file */</span></span><br><span class="line">	<span class="keyword">uint32_t</span>	align;		<span class="comment">/* alignment as a power of 2 */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>magic : 大段的值为FAT_MAGIC，小端的值为FAT_CIGAM。</li>
+<li>nfat_arch : 标志当前文件中包含了几种架构。</li>
+<li>cputype、cpusubtype : cpu 的类型。</li>
+<li>offset : 当前架构的偏移距离。</li>
+<li>size : 当前架构的数据大小。</li>
+<li>align : 对齐方式。</li>
+</ul>
+<p>也可以使用 MachOView 来查看，这种方式比较直观。<br> <img src="https://i.imgur.com/Nvsc6Zs.png" alt="屏幕快照 2019-01-26 下午2.50.40"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://blog.csdn.net/ce123_zhouwei/article/details/6971544" target="_blank" rel="noopener">详解大端模式和小端模式</a></li>
+<li><a href="https://opensource.apple.com/tarballs/xnu/" target="_blank" rel="noopener">xnu源码</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/26/machoheader解析/" data-id="cjs5vel2k0006jq2vh5so8deq" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-AppStoreConnectAPI使用指南" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/22/AppStoreConnectAPI使用指南/" class="article-date">
+  <time datetime="2019-01-22T08:05:50.000Z" itemprop="datePublished">2019-01-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/22/AppStoreConnectAPI使用指南/">App Store Connect API 使用指南</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用 App Store Connect API 非常简单只需要三步</p>
+<ol>
+<li>创建密钥。</li>
+<li>获取 JSON Web Token (JWT).</li>
+<li>发送请求。</li>
+</ol>
+<h2 id="获取密钥"><a href="#获取密钥" class="headerlink" title="获取密钥"></a>获取密钥</h2><ul>
+<li><p>在 App Store Connect 用户和访问中选择密钥即可生成下载密钥。<br><img src="https://i.imgur.com/cGUFHUc.png" alt="屏幕快照 2019-01-21 下午2.26.03"><br><img src="https://i.imgur.com/AMgV6kr.png" alt="屏幕快照 2019-01-21 下午2.26.21"><br><img src="https://i.imgur.com/FBOnzSf.png" alt="屏幕快照 2019-01-21 下午2.26.54"></p>
+</li>
+<li><p>注意⚠️：</p>
+<ul>
+<li>创建密钥的角色必须为法务。</li>
+<li><p>现在仅支持组织身份注册的开发团队申请，以个人身份注册将在不久后推出。<br><img src="https://i.imgur.com/C79cuBl.png" alt="屏幕快照 2019-01-21 下午2.35.52"></p>
+</li>
+<li><p>生成的密钥只能下载一次，请妥善保存。苹果不会保存该密钥，在点击下载API密钥的时候生成该密钥。</p>
+</li>
+<li>如果密钥丢失只能通过编辑撤销此密钥重新生成新密钥。撤销的密钥会显示30天。</li>
+</ul>
+</li>
+</ul>
+<h2 id="获取-JSON-Web-Token-JWT"><a href="#获取-JSON-Web-Token-JWT" class="headerlink" title="获取 JSON Web Token (JWT)"></a>获取 JSON Web Token (JWT)</h2><p>这里使用ruby获取 JWT.其他方式参见 <a href="https://jwt.io" target="_blank" rel="noopener">jwt.io</a>。</p>
+<ol>
+<li><p>安装jwt，如果无法安装请更换源为：<a href="https://gems.ruby-china.com" target="_blank" rel="noopener">https://gems.ruby-china.com</a></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo gem install jwt</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>获取JWT</p>
+ <figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">require</span> <span class="string">'base64'</span></span><br><span class="line"><span class="keyword">require</span> <span class="string">'jwt'</span></span><br><span class="line"></span><br><span class="line">ISSUER_ID = <span class="string">"828a67a2-29f8-4d8f-b1a6-26b123456789"</span></span><br><span class="line">KEY_ID = <span class="string">"9Q2W123456"</span></span><br><span class="line"></span><br><span class="line">private_key = OpenSSL::PKey.read(File.read(<span class="string">"/Users/nelson/key/AuthKey_9Q2W265678.p8"</span>))</span><br><span class="line"></span><br><span class="line">token = JWT.encode(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="symbol">iss:</span> ISSUER_ID,</span><br><span class="line">        <span class="symbol">exp:</span> Time.now.to_i + <span class="number">20</span> *<span class="number">60</span>,</span><br><span class="line">        <span class="symbol">aud:</span> <span class="string">"appstoreconnect-v1"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    private_key,</span><br><span class="line">    <span class="string">"ES256"</span>,</span><br><span class="line">    header_fields=&#123;</span><br><span class="line">        <span class="symbol">kid:</span> KEY_ID</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">puts token</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<pre><code>* ⚠️：ISSUER_ID 为密钥页面的Issuer ID、KEY_ID 为密钥ID、private_key 为密钥路径。
+* 生成的JWT有效时间只有20分钟，20分钟后需要重新获取。
+</code></pre><ol>
+<li>执行ruby脚本获取JWT。<br><img src="https://i.imgur.com/gOW7xpi.png" alt="屏幕快照 2019-01-21 下午3.01.55"></li>
+</ol>
+<h2 id="发送请求"><a href="#发送请求" class="headerlink" title="发送请求"></a>发送请求</h2><p>在获取到JWT之后，需要将JWT添加到请求头中，格式为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">curl -v -H &apos;Authorization: Bearer [signed token]&apos; </span><br><span class="line">&quot;https://api.appstoreconnect.apple.com/v1/apps&quot;</span><br></pre></td></tr></table></figure></p>
+<p>将 [signed token] 替换为你获取到的JWT。<br>举个🌰：<br><img src="https://i.imgur.com/d6mJKLc.png" alt="屏幕快照 2019-01-22 下午4.00.37"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://developer.apple.com/documentation/appstoreconnectapi" target="_blank" rel="noopener">App Store Connect API</a></li>
+<li><a href="https://developer.apple.com/videos/play/wwdc2018/303/" target="_blank" rel="noopener">Automating App Store Connect</a></li>
+<li><a href="https://developer.apple.com/app-store-connect/api/" target="_blank" rel="noopener">App Store Connect API Resources</a></li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/22/AppStoreConnectAPI使用指南/" data-id="cjs5vel1x0000jq2v3bk1h4v6" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-基于Hikari的代码混淆实现" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/04/基于Hikari的代码混淆实现/" class="article-date">
+  <time datetime="2018-12-04T12:36:44.000Z" itemprop="datePublished">2018-12-04</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="最新版下载地址-Hikari。-默认安装在-Library-Developer-Toolchains"><a href="#最新版下载地址-Hikari。-默认安装在-Library-Developer-Toolchains" class="headerlink" title="* 最新版下载地址 Hikari。 默认安装在 /Library/Developer/Toolchains."></a>* 最新版下载地址 <a href="https://github.com/HikariObfuscator/Hikari/releases" target="_blank" rel="noopener">Hikari</a>。 默认安装在 /Library/Developer/Toolchains.</h1><ul>
+<li>Xcode版本：Xcode 10.</li>
+<li><p>使用方式：</p>
+<ol>
+<li>选择 Xcode -&gt; Toolchains -&gt; Hikari.</li>
+<li>Build Settings -&gt; Enable Index-While-Building Functionality 设置为 NO. 如果不设置在Xcode 10.1 (10B61)（在Xcode 9.4.1 (9F2000)中不会出现）会有一个报错。<br><img src="https://i.imgur.com/aTZM0Ze.png" alt="屏幕快照 2018-12-04 下午4.49.47"><ul>
+<li>原因：<a href="https://github.com/facebook/infer/commit/17cc5ec7bec1ef0d10fc3461f089384ee7e51c7f" target="_blank" rel="noopener">Remove unsupported index-store-path argument from clang commands</a>.</li>
+</ul>
+</li>
+<li><p>设置Other C Flags：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-enable-bcfobf 启用伪控制流</span><br><span class="line">-enable-cffobf 启用控制流平坦化</span><br><span class="line">-enable-splitobf 启用基本块分割</span><br><span class="line">-enable-subobf 启用指令替换</span><br><span class="line">-enable-acdobf 启用反class-dump   （class-dump后，.h中看不到方法）</span><br><span class="line">-enable-indibran 启用基于寄存器的相对跳转，配合其他加固可以彻底破坏IDA/Hopper的伪代码(俗称F5)</span><br><span class="line">-enable-strcry 启用字符串加密</span><br><span class="line">-enable-funcwra 启用函数封装</span><br><span class="line">-enable-allobf  一次性启用前文所述的所有标记</span><br><span class="line">以上指令使用需要在前面加上 -mllvm，中间用空格隔开。</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<ol>
+<li>制定混淆代码：<img src="https://i.imgur.com/LJXlxD0.png" alt="屏幕快照 2018-12-04 下午5.08.54"></li>
+</ol>
+</li>
+<li><p>相关资料：</p>
+<ol>
+<li><a href="https://www.freebuf.com/column/144526.html" target="_blank" rel="noopener">控制流平坦化</a></li>
+</ol>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/04/基于Hikari的代码混淆实现/" data-id="cjs5vel270003jq2vx832fytd" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-objc-msgSend" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/10/15/objc-msgSend/" class="article-date">
+  <time datetime="2018-10-15T09:42:54.000Z" itemprop="datePublished">2018-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="objc-msgSend的执行流程："><a href="#objc-msgSend的执行流程：" class="headerlink" title="objc_msgSend的执行流程："></a>objc_msgSend的执行流程：</h2><ol>
+<li>消息发送。</li>
+<li>动态方法解析。</li>
+<li>消息转发。</li>
+</ol>
+<h2 id="objc-msgSend流程图"><a href="#objc-msgSend流程图" class="headerlink" title="objc_msgSend流程图"></a>objc_msgSend流程图</h2><p><img src="https://i.imgur.com/ApCc3kC.png" alt="obc_msgSend"></p>
+<h2 id="objc-msgSend源代码"><a href="#objc-msgSend源代码" class="headerlink" title="objc_msgSend源代码"></a>objc_msgSend源代码</h2><p>objc_msgSend 实现在 objc-msg-arm.s 文件中，通过汇编现实。首先我们先看两个宏：</p>
+<ul>
+<li><p>ENTRY 实现：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.macro ENTRY /* name */</span><br><span class="line">	.text</span><br><span class="line">	.thumb</span><br><span class="line">	.align 5</span><br><span class="line">	.globl $0</span><br><span class="line">	.thumb_func</span><br><span class="line">$0:	</span><br><span class="line">.endmacro</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>由汇编代码可以知道<code>ENTRY</code>是一个宏，里面定义了数据段，对齐方式等一些东西。</p>
+<ul>
+<li>END_ENTRY实现  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.macro END_ENTRY /* name */</span><br><span class="line">LExit$0:	</span><br><span class="line">.endmacro</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>END_ENTRY 为一个宏，本质为一个占位符。<br>⚠️：ENTRY 和 END_ENTRY 成对出现，在其后面跟上函数名称，在其之间为该函数汇编代码的实现。</p>
+<ul>
+<li><p>_objc_msgSend 的实现：</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">   ENTRY _objc_msgSend</span><br><span class="line">MESSENGER_START</span><br><span class="line"></span><br><span class="line">// 在汇编代码中 r0 表示函数的第一个参数，所以 r0 代表消息的接受者，即`cbz r0, LNilReceiver_f `判断 r0 (消息接受者)是否为空，如果为空跳转到 标签 `LNilReceiver_f`。</span><br><span class="line"></span><br><span class="line">cbz	r0, LNilReceiver_f //第一个参数为0，跳转到 LNilReceiver_f</span><br><span class="line"></span><br><span class="line">ldr	r9, [r0]		// r9 = self-&gt;isa</span><br><span class="line">GetClassFromIsa			// r9 = class</span><br><span class="line">CacheLookup NORMAL  // 查找方法缓存</span><br><span class="line">// cache hit, IMP in r12, eq already set for nonstret forwarding</span><br><span class="line">MESSENGER_END_FAST</span><br><span class="line">bx	r12			// call imp</span><br><span class="line"></span><br><span class="line">CacheLookup2 NORMAL</span><br><span class="line">// cache miss</span><br><span class="line">ldr	r9, [r0]		// r9 = self-&gt;isa</span><br><span class="line">GetClassFromIsa			// r9 = class</span><br><span class="line">MESSENGER_END_SLOW</span><br><span class="line">b	__objc_msgSend_uncached // 没有在方法缓存列表里找到方法，跳转到__objc_msgSend_uncached</span><br><span class="line"></span><br><span class="line">   LNilReceiver:</span><br><span class="line">   	// r0 is already zero</span><br><span class="line">   	mov	r1, #0</span><br><span class="line">   	mov	r2, #0</span><br><span class="line">   	mov	r3, #0</span><br><span class="line">   	FP_RETURN_ZERO</span><br><span class="line">   	MESSENGER_END_NIL</span><br><span class="line">   	bx	lr	</span><br><span class="line"></span><br><span class="line">END_ENTRY _objc_msgSend</span><br></pre></td></tr></table></figure>
+<p>  在 ENTRY _objc_msgSend 和 END_ENTRY _objc_msgSend 之间为 _objc_msgSend 函数的实现，MESSENGER_START 也为一个宏。_objc_msgSend 的实现逻辑为：</p>
+<ol>
+<li>判断 r0 是否为空，如果为空 跳转标签 <code>LNilReceiver_f</code>。</li>
+<li>r0 不为空，通过 <code>CacheLookup NORMAL</code> 查找方法缓存，如果找到，直接调用该方法的 IMP。</li>
+<li>如果没找缓存调用方法 <code>__objc_msgSend_uncached</code>。</li>
+</ol>
+</li>
+</ul>
+<p>__objc_msgSend_uncached：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">   STATIC_ENTRY __objc_msgSend_uncached</span><br><span class="line"></span><br><span class="line">// THIS IS NOT A CALLABLE C FUNCTION</span><br><span class="line">// Out-of-band r9 is the class to search</span><br><span class="line"></span><br><span class="line">MethodTableLookup NORMAL	// returns IMP in r12</span><br><span class="line">bx	r12</span><br><span class="line"></span><br><span class="line">END_ENTRY __objc_msgSend_uncached</span><br></pre></td></tr></table></figure>
+<p>__objc_msgSend_uncached方法中主要是 <code>MethodTableLookup</code>宏调用。<br>MethodTableLookup：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">.macro MethodTableLookup</span><br><span class="line">	</span><br><span class="line">	stmfd	sp!, &#123;r0-r3,r7,lr&#125;</span><br><span class="line">	add	r7, sp, #16</span><br><span class="line">	sub	sp, #8			// align stack</span><br><span class="line">	FP_SAVE</span><br><span class="line"></span><br><span class="line">.if $0 == NORMAL</span><br><span class="line">	// receiver already in r0</span><br><span class="line">	// selector already in r1</span><br><span class="line">.else</span><br><span class="line">	mov 	r0, r1			// receiver</span><br><span class="line">	mov 	r1, r2			// selector</span><br><span class="line">.endif</span><br><span class="line">	mov	r2, r9			// class to search</span><br><span class="line"></span><br><span class="line">	blx	__class_lookupMethodAndLoadCache3</span><br><span class="line">	mov	r12, r0			// r12 = IMP</span><br><span class="line">	</span><br><span class="line">.if $0 == NORMAL</span><br><span class="line">	cmp	r12, r12		// set eq for nonstret forwarding</span><br><span class="line">.else</span><br><span class="line">	tst	r12, r12		// set ne for stret forwarding</span><br><span class="line">.endif</span><br><span class="line"></span><br><span class="line">	FP_RESTORE</span><br><span class="line">	add	sp, #8			// align stack</span><br><span class="line">	ldmfd	sp!, &#123;r0-r3,r7,lr&#125;</span><br><span class="line"></span><br><span class="line">.endmacro</span><br></pre></td></tr></table></figure>
+<p><strong>objc_msgSend_uncached 方法中主要为 `</strong>class_lookupMethodAndLoadCache3<code>方法调用。而</code>__class_lookupMethodAndLoadCache3<code>方法实际为 c 语言方法</code>_class_lookupMethodAndLoadCache3`的调用。<br>_class_lookupMethodAndLoadCache3：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line">IMP _class_lookupMethodAndLoadCache3(id obj, SEL sel, Class cls)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> lookUpImpOrForward(cls, sel, obj, </span><br><span class="line">                              YES<span class="comment">/*initialize*/</span>, NO<span class="comment">/*cache*/</span>, YES<span class="comment">/*resolver*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">IMP <span class="title">lookUpImpOrForward</span><span class="params">(Class cls, SEL sel, id inst, </span></span></span><br><span class="line"><span class="function"><span class="params">                       <span class="keyword">bool</span> initialize, <span class="keyword">bool</span> cache, <span class="keyword">bool</span> resolver)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    IMP imp = nil;</span><br><span class="line">    <span class="keyword">bool</span> triedResolver = NO;</span><br><span class="line"></span><br><span class="line">    runtimeLock.assertUnlocked();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Optimistic cache lookup</span></span><br><span class="line">    <span class="keyword">if</span> (cache) &#123;</span><br><span class="line">        imp = cache_getImp(cls, sel);</span><br><span class="line">        <span class="keyword">if</span> (imp) <span class="keyword">return</span> imp;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// runtimeLock is held during isRealized and isInitialized checking</span></span><br><span class="line">    <span class="comment">// to prevent races against concurrent realization.</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// runtimeLock is held during method search to make</span></span><br><span class="line">    <span class="comment">// method-lookup + cache-fill atomic with respect to method addition.</span></span><br><span class="line">    <span class="comment">// Otherwise, a category could be added but ignored indefinitely because</span></span><br><span class="line">    <span class="comment">// the cache was re-filled with the old value after the cache flush on</span></span><br><span class="line">    <span class="comment">// behalf of the category.</span></span><br><span class="line"></span><br><span class="line">    runtimeLock.read();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!cls-&gt;isRealized()) &#123;</span><br><span class="line">        <span class="comment">// Drop the read-lock and acquire the write-lock.</span></span><br><span class="line">        <span class="comment">// realizeClass() checks isRealized() again to prevent</span></span><br><span class="line">        <span class="comment">// a race while the lock is down.</span></span><br><span class="line">        runtimeLock.unlockRead();</span><br><span class="line">        runtimeLock.write();</span><br><span class="line"></span><br><span class="line">        realizeClass(cls);</span><br><span class="line"></span><br><span class="line">        runtimeLock.unlockWrite();</span><br><span class="line">        runtimeLock.read();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (initialize  &amp;&amp;  !cls-&gt;isInitialized()) &#123;</span><br><span class="line">        runtimeLock.unlockRead();</span><br><span class="line">        _class_initialize (_class_getNonMetaClass(cls, inst));</span><br><span class="line">        runtimeLock.read();</span><br><span class="line">        <span class="comment">// If sel == initialize, _class_initialize will send +initialize and </span></span><br><span class="line">        <span class="comment">// then the messenger will send +initialize again after this </span></span><br><span class="line">        <span class="comment">// procedure finishes. Of course, if this is not being called </span></span><br><span class="line">        <span class="comment">// from the messenger then it won't happen. 2778172</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"> retry:    </span><br><span class="line">    runtimeLock.assertReading();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try this class's cache.</span></span><br><span class="line"></span><br><span class="line">    imp = cache_getImp(cls, sel);</span><br><span class="line">    <span class="keyword">if</span> (imp) <span class="keyword">goto</span> done;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try this class's method lists.</span></span><br><span class="line">    &#123;</span><br><span class="line">        Method meth = getMethodNoSuper_nolock(cls, sel);</span><br><span class="line">        <span class="keyword">if</span> (meth) &#123;</span><br><span class="line">            log_and_fill_cache(cls, meth-&gt;imp, sel, inst, cls);</span><br><span class="line">            imp = meth-&gt;imp;</span><br><span class="line">            <span class="keyword">goto</span> done;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Try superclass caches and method lists.</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">unsigned</span> attempts = unreasonableClassCount();</span><br><span class="line">        <span class="keyword">for</span> (Class curClass = cls-&gt;superclass;</span><br><span class="line">             curClass != nil;</span><br><span class="line">             curClass = curClass-&gt;superclass)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// Halt if there is a cycle in the superclass chain.</span></span><br><span class="line">            <span class="keyword">if</span> (--attempts == <span class="number">0</span>) &#123;</span><br><span class="line">                _objc_fatal(<span class="string">"Memory corruption in class list."</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Superclass cache.</span></span><br><span class="line">            imp = cache_getImp(curClass, sel);</span><br><span class="line">            <span class="keyword">if</span> (imp) &#123;</span><br><span class="line">                <span class="keyword">if</span> (imp != (IMP)_objc_msgForward_impcache) &#123;</span><br><span class="line">                    <span class="comment">// Found the method in a superclass. Cache it in this class.</span></span><br><span class="line">                    log_and_fill_cache(cls, imp, sel, inst, curClass);</span><br><span class="line">                    <span class="keyword">goto</span> done;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// Found a forward:: entry in a superclass.</span></span><br><span class="line">                    <span class="comment">// Stop searching, but don't cache yet; call method </span></span><br><span class="line">                    <span class="comment">// resolver for this class first.</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">// Superclass method list.</span></span><br><span class="line">            Method meth = getMethodNoSuper_nolock(curClass, sel);</span><br><span class="line">            <span class="keyword">if</span> (meth) &#123;</span><br><span class="line">                log_and_fill_cache(cls, meth-&gt;imp, sel, inst, curClass);</span><br><span class="line">                imp = meth-&gt;imp;</span><br><span class="line">                <span class="keyword">goto</span> done;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No implementation found. Try method resolver once.</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (resolver  &amp;&amp;  !triedResolver) &#123;</span><br><span class="line">        runtimeLock.unlockRead();</span><br><span class="line">        _class_resolveMethod(cls, sel, inst);</span><br><span class="line">        runtimeLock.read();</span><br><span class="line">        <span class="comment">// Don't cache the result; we don't hold the lock so it may have </span></span><br><span class="line">        <span class="comment">// changed already. Re-do the search from scratch instead.</span></span><br><span class="line">        triedResolver = YES;</span><br><span class="line">        <span class="keyword">goto</span> retry;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// No implementation found, and method resolver didn't help. </span></span><br><span class="line">    <span class="comment">// Use forwarding.</span></span><br><span class="line"></span><br><span class="line">    imp = (IMP)_objc_msgForward_impcache;</span><br><span class="line">    cache_fill(cls, sel, imp, inst);</span><br><span class="line"></span><br><span class="line"> done:</span><br><span class="line">    runtimeLock.unlockRead();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> imp;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>lookUpImpOrForward</code> 方法中主要是通过 <code>getMethodNoSuper_nolock</code> 方法来查找方法。如果找到方法则通过 <code>log_and_fill_cache</code> 方法把方法的 IMP 添加到其类对象的方法列表中。<br>getMethodNoSuper_nolock：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">method_t</span> *</span><br><span class="line">getMethodNoSuper_nolock(Class cls, SEL sel)</span><br><span class="line">&#123;</span><br><span class="line">    runtimeLock.assertLocked();</span><br><span class="line"></span><br><span class="line">    assert(cls-&gt;isRealized());</span><br><span class="line">    <span class="comment">// fixme nil cls? </span></span><br><span class="line">    <span class="comment">// fixme nil sel?</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">auto</span> mlists = cls-&gt;data()-&gt;methods.beginLists(), </span><br><span class="line">              end = cls-&gt;data()-&gt;methods.endLists(); </span><br><span class="line">         mlists != end;</span><br><span class="line">         ++mlists)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">method_t</span> *m = search_method_list(*mlists, sel);</span><br><span class="line">        <span class="keyword">if</span> (m) <span class="keyword">return</span> m;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ls-&gt;data()</code> 返回 <code>class_rw_t</code> 类型结构体。通过for循环取出里面对应的值。通过方法 <code>search_method_list</code>来查找方法。</p>
+<p>search_method_list：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> method_t *<span class="title">search_method_list</span><span class="params">(<span class="keyword">const</span> <span class="keyword">method_list_t</span> *mlist, SEL sel)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> methodListIsFixedUp = mlist-&gt;isFixedUp();</span><br><span class="line">    <span class="keyword">int</span> methodListHasExpectedSize = mlist-&gt;entsize() == <span class="keyword">sizeof</span>(<span class="keyword">method_t</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (__builtin_expect(methodListIsFixedUp &amp;&amp; methodListHasExpectedSize, <span class="number">1</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> findMethodInSortedMethodList(sel, mlist);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Linear search of unsorted method list</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; meth : *mlist) &#123;</span><br><span class="line">            <span class="keyword">if</span> (meth.name == sel) <span class="keyword">return</span> &amp;meth;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> DEBUG</span></span><br><span class="line">    <span class="comment">// sanity-check negative results</span></span><br><span class="line">    <span class="keyword">if</span> (mlist-&gt;isFixedUp()) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">auto</span>&amp; meth : *mlist) &#123;</span><br><span class="line">            <span class="keyword">if</span> (meth.name == sel) &#123;</span><br><span class="line">                _objc_fatal(<span class="string">"linear search worked when binary search did not"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法通过 <code>__builtin_expect</code> 来进行区分，如果返回为真，这通过一个排序的方法列表来查找方法，否则，通过for循环遍历查找。查找方法为 <code>findMethodInSortedMethodList</code>。<br>findMethodInSortedMethodList：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> method_t *<span class="title">findMethodInSortedMethodList</span><span class="params">(SEL key, <span class="keyword">const</span> <span class="keyword">method_list_t</span> *<span class="built_in">list</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    assert(<span class="built_in">list</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">method_t</span> * <span class="keyword">const</span> first = &amp;<span class="built_in">list</span>-&gt;first;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">method_t</span> *base = first;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">method_t</span> *probe;</span><br><span class="line">    <span class="keyword">uintptr_t</span> keyValue = (<span class="keyword">uintptr_t</span>)key;</span><br><span class="line">    <span class="keyword">uint32_t</span> count;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (count = <span class="built_in">list</span>-&gt;count; count != <span class="number">0</span>; count &gt;&gt;= <span class="number">1</span>) &#123;</span><br><span class="line">        probe = base + (count &gt;&gt; <span class="number">1</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">uintptr_t</span> probeValue = (<span class="keyword">uintptr_t</span>)probe-&gt;name;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (keyValue == probeValue) &#123;</span><br><span class="line">            <span class="comment">// `probe` is a match.</span></span><br><span class="line">            <span class="comment">// Rewind looking for the *first* occurrence of this value.</span></span><br><span class="line">            <span class="comment">// This is required for correct category overrides.</span></span><br><span class="line">            <span class="keyword">while</span> (probe &gt; first &amp;&amp; keyValue == (<span class="keyword">uintptr_t</span>)probe[<span class="number">-1</span>].name) &#123;</span><br><span class="line">                probe--;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> (<span class="keyword">method_t</span> *)probe;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (keyValue &gt; probeValue) &#123;</span><br><span class="line">            base = probe + <span class="number">1</span>;</span><br><span class="line">            count--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> nil;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过观察，这就是是一个二分查找的算法。</p>
+<h2 id="额外提示："><a href="#额外提示：" class="headerlink" title="额外提示："></a>额外提示：</h2><p>sel_registerName(“Function name”) 等价于 @selector(“Function name”)<br>验证方式：NSLog(@”%p %p”,sel_registerName(“Function name”), @selector(“Function name”));</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/10/15/objc-msgSend/" data-id="cjs5vel2l0007jq2v44c7evko" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Xcode10踩坑记录" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/13/Xcode10踩坑记录/" class="article-date">
+  <time datetime="2018-09-13T12:07:54.000Z" itemprop="datePublished">2018-09-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天凌晨发布了3款手机 iPhone XR、iPhone XS、iPhone XS Max，打开开发者网站已经发布可Xcode10 GM版，于是下载下来开始进行适配工作。本来以为不需要进行适配的但是打开运行项目之后发现开始报错了：</p>
+<ol>
+<li>第一个错误<br><img src="https://i.imgur.com/2i2FRfq.png" alt="屏幕快照 2018-09-14 上午11.14.40"><br>解决方式：<ul>
+<li>第一种：删除Output Files的内容<br><img src="https://i.imgur.com/fKC9xQn.png" alt="屏幕快照 2018-09-14 下午4.22.38"></li>
+</ul>
+</li>
+</ol>
+<pre><code>* 第二种：打开Xcode 点击File-&gt;Project/Workspace settings 把Build System改为Legacy Build System。但是不推荐这种。
+</code></pre><ol start="2">
+<li><p>第二个错误：lstdcC++.6.0.9找不到<br><img src="https://i.imgur.com/yeMtokH.png" alt="屏幕快照 2018-09-14 下午4.37.08"><br>经过排查发现Alipay需要这个库，但是这个库几年前就已经废弃，Apple在iOS SDK移除了此库文件。苹果开发者论坛说明了原因<a href="https://forums.developer.apple.com/message/314346#314346" target="_blank" rel="noopener">forums.developer.apple.com</a><br>解决方式：</p>
+<ul>
+<li>更新Alipay解决问题。</li>
+<li><p>如果不能更新或者无法更新的话可以输入这段代码。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cp /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libstdc++.* /Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/</span><br><span class="line"></span><br><span class="line">cp /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/usr/lib/libstdc++.* /Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/usr/lib/</span><br></pre></td></tr></table></figure>
+<p>  但是使用此方法模拟器运行会产生崩溃。</p>
+</li>
+<li><p>使用iOS11 SDK编译。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>其他问题可以参考 <a href="https://juejin.im/post/5b1634f0f265da6e61788998" target="_blank" rel="noopener">Xcode 10 踩坑</a>。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/13/Xcode10踩坑记录/" data-id="cjs5vel260002jq2vhvqqzf7y" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-XcodeServer使用指南" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/08/17/XcodeServer使用指南/" class="article-date">
+  <time datetime="2018-08-17T06:27:09.000Z" itemprop="datePublished">2018-08-17</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/17/XcodeServer使用指南/">XcodeServer使用指南</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上一篇我们说了如何搭建XcodeServer，这次我们来说下如何下载测试包和查看相关日志。</p>
+<ol>
+<li><p>首先我们需要在Xcode里添加一台XcodeServer。点击左上角的Xcode-&gt;preferences-&gt;accounts,在这个页面的左下角点击加号选择XcodeServer即可添加一天服务器。添加方式可以直接从列表里选择也可以通过ip地址搜索。添加完成如下图所示：<img src="https://i.imgur.com/XX6EIDk.png" alt="屏幕快照 2018-08-17 下午2.41.23"><br>点击红色箭头指向的位置可以打开XcodeServer提供的前端页面。<img src="https://i.imgur.com/DaJpNqV.png" alt="屏幕快照 2018-08-17 下午2.44.11"><br>点击Integrate可以立即构建一个测试包。如果想下载包的话点一任意一行再点击product即可下载刚刚构建的包。<img src="https://i.imgur.com/ipCRdx0.png" alt="屏幕快照 2018-08-17 下午2.46.34"><br>注意：有时打开该页面的时候会有这样的提示（chrome浏览器）点击高级里的继续前往就可打开这个网页。<img src="https://i.imgur.com/SXeL6yO.png" alt="屏幕快照 2018-08-17 下午2.48.58"></p>
+</li>
+<li><p>如果当我们在Xcode里添加了一个XcodeServer，我们可以在Xcode的导航区域看到你所有创建过的Bot。<br><img src="https://i.imgur.com/OT7riKM.png" alt="屏幕快照 2018-08-17 下午2.32.33"><br>点击某个Bot即可看到构建bot的相关信息和打包时候产生的log日志。<br><img src="https://i.imgur.com/5IUodD5.png" alt="屏幕快照 2018-08-17 下午2.50.37"><br><img src="https://i.imgur.com/EvQWrbS.png" alt="屏幕快照 2018-08-17 下午2.57.11"><br>点击save可以保存该包，点击install on device可以直接安装到设备。<br><img src="https://i.imgur.com/S34pFf9.png" alt="屏幕快照 2018-08-17 下午3.10.16"></p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/08/17/XcodeServer使用指南/" data-id="cjs5vel230001jq2v1femd4ok" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="xcode-搭建指南" class="article article-type-xcode" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/08/16/搭建指南/" class="article-date">
+  <time datetime="2018-08-16T07:27:59.000Z" itemprop="datePublished">2018-08-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/16/搭建指南/">Xcode Server 搭建指南</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Xcode Server是Apple提供的CI工具，使用它我们可以方便快捷的进行打包。从Xcode8开始，Xcode Server从Mac OS Server中迁移到了Xcode中。笔者使用的为Xcode9。<br>打开和配置Xcode Server十分简单：</p>
+<ul>
+<li>依次点击 Xcode -&gt; Preferences -&gt; Server &amp; Bot。将右上角的开关设置为ON。在打开的时候会让我们选择用户，选择当前登录的用户即可。但是第一次打开的时候会让你去安全性与隐私的辅助功能中去打开Xcode Helper。<br><img src="https://i.imgur.com/7I7I3Kf.png" alt="屏幕快照 2018-08-16 下午3.39.27"><br><img src="https://i.imgur.com/XBBwjdc.png" alt="屏幕快照 2018-08-16 下午3.56.38"><br>注意：这里的Integration timeout为将Integrate设置为On commit的时候拉取的时间间隔，下文或说到。Permissions和Mail设置为默认值即可。</li>
+</ul>
+<p>至此Xcode Server已经打开，我们接下来需要进行一些环境的配置。</p>
+<ul>
+<li><p>依次点击 Product -&gt; CreateBot 进行环境的配置。Name为你的Bot的名字、Server选择你开启Xcode Server的那台电脑。选择电脑后会让你登录，登录的用户和密码为之前打开Xcode Server的时候选择的用户和密码。<br><img src="https://i.imgur.com/UFMuGZH.png" alt="屏幕快照 2018-08-16 下午4.09.15"><img src="https://i.imgur.com/6CTZqgW.png" alt="屏幕快照 2018-08-16 下午4.12.04"></p>
+</li>
+<li><p>点击Next之后进行Source Control。选择Sign In进行登录，之后选择需要打包的分支。<br><img src="https://i.imgur.com/fcBmer4.png" alt="屏幕快照 2018-08-16 下午4.19.19"></p>
+</li>
+<li><p>点击Next进行build的配置。Scheme选择需要打包的Scheme，Analyze 和 Test可以不打开，如果有需要可以打开。Archive的Export选择Installabel Product选项。Configuration为Use Scheme Setting。<br><img src="https://i.imgur.com/UDnoXO9.png" alt="屏幕快照 2018-08-16 下午4.22.46"><br>注意：如果Archive的Export选择为Use Custom Export Options Plist，那么你需要提供一个plist文件，这个plist文件可以通过Product中的Archive导出一个安装包，导出的包文件夹里就有这个Plist文件。<br><img src="https://i.imgur.com/X6MnHOe.png" alt="屏幕快照 2018-08-16 下午4.53.30"></p>
+</li>
+<li><p>接下来配置Integrations和device type这两步很简单不多说了根据自己的要求去配置即可。<br><img src="https://i.imgur.com/L7U8ZIG.png" alt="屏幕快照 2018-08-16 下午4.32.11"><img src="https://i.imgur.com/5sGsTAH.png" alt="屏幕快照 2018-08-16 下午4.33.18"></p>
+</li>
+<li>配置签名的部分分为自动签名和手动签名，如果选择自动签名的话需要把当前机器加入到你的Team中。并且在开发中网站的Servers中会出现你的电脑<br><img src="https://i.imgur.com/vecoFQI.png" alt="屏幕快照 2018-08-16 下午4.34.50"><br><img src="https://i.imgur.com/62zP6iA.png" alt="屏幕快照 2018-08-16 下午4.36.42"></li>
+<li>在配置环境变量的地方可以配置一些环境变量，如果没有需要可以什么都不配置。<br><img src="https://i.imgur.com/nPHWMy8.png" alt="屏幕快照 2018-08-16 下午4.39.22"></li>
+<li>最后配置tiggers。可以配置一些打包之前和之后进行的一些脚本操作，至于Email操作笔者的电脑一直不好使，等找到错误原因在更新吧。最后点击Creat就完成一个Bot的创建。<br><img src="https://i.imgur.com/YQZnJJO.png" alt="屏幕快照 2018-08-16 下午4.39.51"></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/08/16/搭建指南/" data-id="cjs5vel290004jq2v6xbdj556" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-结构体struct填充字节的问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/05/23/结构体struct填充字节的问题/" class="article-date">
+  <time datetime="2018-05-23T06:42:46.000Z" itemprop="datePublished">2018-05-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/05/23/结构体struct填充字节的问题/">结构体struct填充字节的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>定义一个结构体</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    char a;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过sizeof函数计算该结构体大大小为1byte。但是要是以下这种情况呢？</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct test1 &#123;</span><br><span class="line">    char a;</span><br><span class="line">    int b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>此时该结构体的大小为8byte。但是为什么是8byte而不是5byte呢？<br>这里就涉及到了一个内存对齐的问题。那么什么是内存对齐呢？</p>
+<ul>
+<li>C语言中的基本数据类型除char外他们的内存地址都不是随机存储在内存中的：<ol>
+<li>char可以开始于任何内存地址。</li>
+<li>short（2字节）从偶数字节地址开始。</li>
+<li>int/float（4字节）从能被4整除的地址开始。</li>
+<li>long/double(8字节）从能被8整除的地址开始。</li>
+</ol>
+</li>
+</ul>
+<p>所以我们就能理解为什么test1结构体的大小为8byte了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    char a;</span><br><span class="line">    // 3 byte padding</span><br><span class="line">    int b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>因为int类型必须要以能被4整除的地址开始，所以需要在char后面添加3个字节以满足int的地址要求。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    char a;</span><br><span class="line">    // 3 byte padding</span><br><span class="line">    int b;</span><br><span class="line">    char *pa;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>此时指针pa恰好满足以被8整除的地址开头所以这个结构体的大小为16byte。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    uint8_t a,b;</span><br><span class="line">    uint32_t c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>这个结构体的大小为8.因为uint32_t c，的存在所以uint8_t a 申请的内存大小为4 但是a只占了一个字节，剩余的3个字节是填充的，但是uint8_t b，是在uint8_t a之后的正好可以放在3个空白字节中，所以大小为8.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct test &#123;</span><br><span class="line">    uint8_t a;</span><br><span class="line">    uint32_t c;</span><br><span class="line">    uint8_t b;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个结构体大小为12.此时b没有挨着a，先为a申请4个字节的内存，之后为c生气4个字节的内存，最后为b申请4个字节的内存。</p>
+<hr>
+<h3 id="新增内容"><a href="#新增内容" class="headerlink" title="新增内容"></a>新增内容</h3><p>在WWDC2018 whats new in LLVM中出现了一个一个新特性：#pragma pack 那么这个新特性的作用是什么呢？</p>
+<ul>
+<li><p>编译器中提供了#pragma pack(n)来设定变量以n字节对齐方式。n字节对齐就是说变量存放的起始地址的偏移量有两种情况：第一、如果n大于等于该变量所占用的字节数，那么偏移量必须满足默认的对齐方式，第二、如果n小于该变量的类型所占用的字节数，那么偏移量为n的倍数，不用满足默认的对齐方式。结构的总大小也有个约束条件，分下面两种情况：如果n大于所有成员变量类型所占用的字节数，那么结构的总大小必须为占用空间最大的变量占用的空间数的倍数；否则必须为n的倍数。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> #pragma pack (push, 4)</span><br><span class="line">struct test &#123;</span><br><span class="line"> char m1;</span><br><span class="line"> double m4;</span><br><span class="line"> int m3;</span><br><span class="line"> &#125;;</span><br><span class="line"> #pragma pack (pop)</span><br></pre></td></tr></table></figure>
+<p>  此结构体的大小为16，下面分析其存储情况，首先为m1分配空间，其偏移量为0，满足我们自己设定的对齐方式（4字节对齐），m1大小为1个字节。接着开始为m4分配空间，这时其偏移量为1，需要补足3个字节，这样使偏移量满足为n=4的倍数（因为sizeof(double)大于4）,m4占用8个字节。接着为m3分配空间，这时其偏移量为12，满足为4的倍数，m3占用4个字节。这时已经为所有成员变量分配了空间，共分配了16个字节，满足为n的倍数。如果把上面的#pragma pack(4)改为#pragma pack(8)，那么我们可以得到结构的大小为24。</p>
+</li>
+<li><p>#pragma pack(push,1)与#pragma pack(1)的区别 </p>
+<ul>
+<li>#pragma pack (n) 作用：LLVM将按照n个字节对齐。#pragma pack () 作用：取消自定义字节对齐方式。   </li>
+<li>#pragma  pack (push,1) 作用：是指把原来对齐方式设置压栈，并设新的对齐方式设置为1个字节对齐<br>#pragma pack(pop) 作用：恢复对齐状态 </li>
+</ul>
+</li>
+</ul>
+<p>附录：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">32位系统</th>
+<th style="text-align:center">64位系统</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">char</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">short</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center">2</td>
+</tr>
+<tr>
+<td style="text-align:center">float</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">4</td>
+</tr>
+<tr>
+<td style="text-align:center">double</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">int</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">4</td>
+</tr>
+<tr>
+<td style="text-align:center">long</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">long long</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">void *</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">8</td>
+</tr>
+<tr>
+<td style="text-align:center">uint32_t</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">uint32_t</td>
+<td style="text-align:center">4</td>
+<td style="text-align:center">4</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/05/23/结构体struct填充字节的问题/" data-id="cjs5vel2a0005jq2vesdqry66" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/26/machoheader解析/">Mach - O Header 解析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/AppStoreConnectAPI使用指南/">App Store Connect API 使用指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

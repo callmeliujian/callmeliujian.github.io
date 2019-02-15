@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Xcode10踩坑记录 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="今天凌晨发布了3款手机 iPhone XR、iPhone XS、iPhone XS Max，打开开发者网站已经发布可Xcode10 GM版，于是下载下来开始进行适配工作。本来以为不需要进行适配的但是打开运行项目之后发现开始报错了：  第一个错误解决方式： 第一种：删除Output Files的内容    * 第二种：打开Xcode 点击File-&amp;gt;Project/Workspace sett">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xcode10踩坑记录">
+<meta property="og:url" content="http://yoursite.com/2018/09/13/Xcode10踩坑记录/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="今天凌晨发布了3款手机 iPhone XR、iPhone XS、iPhone XS Max，打开开发者网站已经发布可Xcode10 GM版，于是下载下来开始进行适配工作。本来以为不需要进行适配的但是打开运行项目之后发现开始报错了：  第一个错误解决方式： 第一种：删除Output Files的内容    * 第二种：打开Xcode 点击File-&amp;gt;Project/Workspace sett">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://i.imgur.com/2i2FRfq.png">
+<meta property="og:image" content="https://i.imgur.com/fKC9xQn.png">
+<meta property="og:image" content="https://i.imgur.com/yeMtokH.png">
+<meta property="og:updated_time" content="2019-02-15T09:26:43.045Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Xcode10踩坑记录">
+<meta name="twitter:description" content="今天凌晨发布了3款手机 iPhone XR、iPhone XS、iPhone XS Max，打开开发者网站已经发布可Xcode10 GM版，于是下载下来开始进行适配工作。本来以为不需要进行适配的但是打开运行项目之后发现开始报错了：  第一个错误解决方式： 第一种：删除Output Files的内容    * 第二种：打开Xcode 点击File-&amp;gt;Project/Workspace sett">
+<meta name="twitter:image" content="https://i.imgur.com/2i2FRfq.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Xcode10踩坑记录" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/09/13/Xcode10踩坑记录/" class="article-date">
+  <time datetime="2018-09-13T12:07:54.000Z" itemprop="datePublished">2018-09-13</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Xcode10踩坑记录
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天凌晨发布了3款手机 iPhone XR、iPhone XS、iPhone XS Max，打开开发者网站已经发布可Xcode10 GM版，于是下载下来开始进行适配工作。本来以为不需要进行适配的但是打开运行项目之后发现开始报错了：</p>
+<ol>
+<li>第一个错误<br><img src="https://i.imgur.com/2i2FRfq.png" alt="屏幕快照 2018-09-14 上午11.14.40"><br>解决方式：<ul>
+<li>第一种：删除Output Files的内容<br><img src="https://i.imgur.com/fKC9xQn.png" alt="屏幕快照 2018-09-14 下午4.22.38"></li>
+</ul>
+</li>
+</ol>
+<pre><code>* 第二种：打开Xcode 点击File-&gt;Project/Workspace settings 把Build System改为Legacy Build System。但是不推荐这种。
+</code></pre><ol start="2">
+<li><p>第二个错误：lstdcC++.6.0.9找不到<br><img src="https://i.imgur.com/yeMtokH.png" alt="屏幕快照 2018-09-14 下午4.37.08"><br>经过排查发现Alipay需要这个库，但是这个库几年前就已经废弃，Apple在iOS SDK移除了此库文件。苹果开发者论坛说明了原因<a href="https://forums.developer.apple.com/message/314346#314346" target="_blank" rel="noopener">forums.developer.apple.com</a><br>解决方式：</p>
+<ul>
+<li>更新Alipay解决问题。</li>
+<li><p>如果不能更新或者无法更新的话可以输入这段代码。</p>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cp /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/libstdc++.* /Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/lib/</span><br><span class="line"></span><br><span class="line">cp /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/usr/lib/libstdc++.* /Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/usr/lib/</span><br></pre></td></tr></table></figure>
+<p>  但是使用此方法模拟器运行会产生崩溃。</p>
+</li>
+<li><p>使用iOS11 SDK编译。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>其他问题可以参考 <a href="https://juejin.im/post/5b1634f0f265da6e61788998" target="_blank" rel="noopener">Xcode 10 踩坑</a>。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/09/13/Xcode10踩坑记录/" data-id="cjs5vel260002jq2vhvqqzf7y" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/15/objc-msgSend/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          objc_msgSend
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/08/17/XcodeServer使用指南/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">XcodeServer使用指南</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/12/">December 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/09/">September 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">August 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">May 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/26/machoheader解析/">Mach - O Header 解析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/22/AppStoreConnectAPI使用指南/">App Store Connect API 使用指南</a>
+          </li>
+        
+          <li>
+            <a href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
+          </li>
+        
+          <li>
+            <a href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
