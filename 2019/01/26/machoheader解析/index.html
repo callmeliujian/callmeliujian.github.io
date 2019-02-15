@@ -16,7 +16,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://i.imgur.com/lvGR5rh.png">
 <meta property="og:image" content="https://i.imgur.com/Nvsc6Zs.png">
-<meta property="og:updated_time" content="2019-02-15T11:11:07.671Z">
+<meta property="og:updated_time" content="2019-02-15T14:32:35.678Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Mach - O 解析">
 <meta name="twitter:description" content="0x0. 文件格式查看 file 命令：   12345678910    ➜  ~ file /bin/ls/bin/ls: Mach-O 64-bit executable x86_64➜  ~ file /usr/bin/perl/usr/bin/perl: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit">
@@ -115,13 +115,27 @@
 下面是对应的示意，内容来自于深入解析Mac OS X &amp; iOS 操作系统。
 
 | 文件类型 | 用途 | 示例 |
-</code></pre><p>| :-: | :-: | :-: |<br>| MH_OBJECT | 可重定位的目标文件：编译器对源代码编译得到的（中间）结果，也可以是32位的内核扩展。 | 通过 gcc -c 生成  |<br>| MH_EXECUTE | 可执行二进制文件 | /usr/bin 目录下的二进制文件，以及应用程序的二进制文件（路径：Cntents/MacOS）和 iPhone 应用程序 |<br>| MH_CORE | 核心转储文件 | 核心转储时生成的 |<br>| MH_DYLIB | 动态库 | /usr/lib 中的库文件，以及框架中的二进制文件 |<br>| MH_DYLINKER | 动态链接器 | /usr/lib/dyld |<br>| MH_BUNDLE | 插件：非独立的二进制文件，要加载至其他二进制才能发挥作用。和DYLIB类型的文件的不同之处在于，这些二进制文件是可执行文件显示地加载的，通常是用 NSBundle或CFBundle | 通过 gcc -bundle生成。 /System/Library/QuickLook目录下的QuickLook插件<br>/System/Library/Spotlight目录下的Spotlight Importer插件<br>/System/Library/Automator目录下的 Automator action插件<br> |<br>| MH_DSYM | 辅助的符号文件以及调试信息 | 通过 gcc -g 生成 |<br>| MH_KEXT_BUNDLE | 内核扩展 | 64位的内核扩展 |</p>
+</code></pre><p>| :-: | :-: | :-: |<br>| MH_OBJECT | 可重定位的目标文件：编译器对源代码编译得到的（中间）结果，也可以是32位的内核扩展。 | 通过 gcc -c 生成  |<br>| MH_EXECUTE | 可执行二进制文件 | /usr/bin 目录下的二进制文件，以及应用程序的二进制文件（路径：Cntents/MacOS）和 iPhone 应用程序 |<br>| MH_CORE | 核心转储文件 | 核心转储时生成的 |<br>| MH_DYLIB | 动态库 | /usr/lib 中的库文件，以及框架中的二进制文件 |<br>| MH_DYLINKER | 动态链接器 | /usr/lib/dyld |<br>| MH_BUNDLE | 插件：非独立的二进制文件，要加载至其他二进制才能发挥作用。和DYLIB类型的文件的不同之处在于，这些二进制文件是可执行文件显示地加载的，通常是用 NSBundle或CFBundle | 通过 gcc -bundle生成。 /System/Library/QuickLook目录下的QuickLook插件/System/Library/Spotlight目录下的Spotlight Importer插件/System/Library/Automator目录下的 Automator action插件<br>| MH_DSYM | 辅助的符号文件以及调试信息 | 通过 gcc -g 生成 |<br>| MH_KEXT_BUNDLE | 内核扩展 | 64位的内核扩展 |</p>
 <ul>
 <li>ncmds：命令个数</li>
 <li>sizeofcmds：所有命令的大小</li>
 <li>flags：动态链接器dyld标志位，具体为：</li>
 </ul>
 <pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">    #define	MH_NOUNDEFS	0x1		/* the object file has no undefined eferences */</span><br><span class="line">#define	MH_INCRLINK	0x2		/* the object file is the output of an incremental link against a base file and can&apos;t be link edited again */</span><br><span class="line">#define MH_DYLDLINK	0x4		/* the object file is input for the dynamic linker and can&apos;t be staticly link edited again */</span><br><span class="line">#define MH_BINDATLOAD 0x8		/* the object file&apos;s undefined references are bound by the dynamic linker when loaded. */</span><br><span class="line">#define MH_PREBOUND	0x10		/* the file has its dynamic undefined references prebound. */</span><br><span class="line">#define MH_SPLIT_SEGS	0x20		/* the file has its read-only and read-write segments split */</span><br><span class="line">#define MH_LAZY_INIT	0x40		/* the shared library init routine is to be run lazily via catching memory faults to its writeable segments (obsolete) */</span><br><span class="line">#define MH_TWOLEVEL	0x80		/* the image is using two-level name space bindings */</span><br><span class="line">#define MH_FORCE_FLAT	0x100		/* the executable is forcing all images to use flat name space bindings */</span><br><span class="line">#define MH_NOMULTIDEFS	0x200		/* this umbrella guarantees no multiple defintions of symbols in its sub-images so the two-level namespace hints can always be used. */</span><br><span class="line">#define MH_NOFIXPREBINDING 0x400	/* do not have dyld notify the prebinding agent about this executable */</span><br><span class="line">#define MH_PREBINDABLE  0x800           /* the binary is not prebound but can have its prebinding redone. only used when MH_PREBOUND is not set. */</span><br><span class="line">#define MH_ALLMODSBOUND 0x1000		/* indicates that this binary binds to all two-level namespace modules of its dependent libraries. only used when MH_PREBINDABLE and MH_TWOLEVEL are both set. */ </span><br><span class="line">#define MH_SUBSECTIONS_VIA_SYMBOLS 0x2000/* safe to divide up the sections into sub-sections via symbols for dead code stripping */</span><br><span class="line">#define MH_CANONICAL    0x4000		/* the binary has been canonicalized via the unprebind operation */</span><br><span class="line">#define MH_WEAK_DEFINES	0x8000		/* the final linked image contains external weak symbols */</span><br><span class="line">#define MH_BINDS_TO_WEAK 0x10000	/* the final linked image uses weak symbols */</span><br><span class="line">#define MH_ALLOW_STACK_EXECUTION 0x20000/* When this bit is set, all stacks in the task will be given stack execution privilege.  Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define MH_ROOT_SAFE 0x40000           /* When this bit is set, the binary declares it is safe for use in processes with uid zero */                            </span><br><span class="line">#define MH_SETUID_SAFE 0x80000         /* When this bit is set, the binary declares it is safe for use in processes when issetugid() is true */</span><br><span class="line">#define MH_NO_REEXPORTED_DYLIBS 0x100000 /* When this bit is set on a dylib,the static linker does not need to examine dependent dylibs to see if any are re-exported */</span><br><span class="line">#define	MH_PIE 0x200000			/* When this bit is set, the OS will load the main executable at a random address.  Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define	MH_DEAD_STRIPPABLE_DYLIB 0x400000 /* Only for use on dylibs.  When linking against a dylib that has this bit set, the static linker will automatically not create a LC_LOAD_DYLIB load command to the dylib if no symbols are being referenced from the dylib. */</span><br><span class="line">#define MH_HAS_TLV_DESCRIPTORS 0x800000 /* Contains a section of type S_THREAD_LOCAL_VARIABLES */</span><br><span class="line">#define MH_NO_HEAP_EXECUTION 0x1000000	/* When this bit is set, the OS wil run the main executable with a non-executable heap even on platforms (e.g. i386) that don&apos;t require it. Only used in MH_EXECUTE filetypes. */</span><br><span class="line">#define MH_APP_EXTENSION_SAFE 0x02000000 /* The code was linked for use in an application extension. */</span><br></pre></td></tr></table></figure>
+
+下面是对应的示意，内容来自于深入解析Mac OS X &amp; iOS 操作系统。
+
+| 标志 | 用途 |
+| :-: | :-: |
+| MH_NOUNDEFS | 表示目标文件没有带有未定义的符号。这些目标文件大部分都是静态二进制文件，没有进一步的链接依赖关系 |
+| MH_SPLIT_SEGS | 表示目标文件中的只读段和可读写段区分开了 |
+| MH_TWOLEVEL | 两层名称绑定 |
+| MH_FORCE_FLAT | 扁平名称空间绑定（不能和MH_TWOLEVEL同时出现） |
+| MH_WEAK_DEFINES | 二进制文件使用了（导出了）弱符号 |
+| MH_BINDS_TO_WEAK | 二进制文件链接了弱符号 |
+| MH_ALLOW_STACK_EXECUTION | 允许栈可执行。只用可执行文件可以使用这个标志，但是通常不建议使用。当发生缓冲区溢出时，可执行的栈会给代码注入带来方便 |
+| MH_PIE | 对可执行的文件类型启用地址空间布局随机化 |
+| MH_NO_HEAP_EXECUTION | 将堆标记为不可执行。可以用于防止“堆喷（heap spray）”的攻击技术，使用这种技术的黑客盲目地用shellcode覆盖大量的堆空间，然后投机地跳转到这些地址中，企图能够跳转到自己的代码并且执行 |
 </code></pre><ul>
 <li>reserved：保留字段，存在于64位的Mach-O文件中。</li>
 </ul>
@@ -154,7 +168,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/26/machoheader解析/" data-id="cjs5yd92j0006d92v9uvcd5bf" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/26/machoheader解析/" data-id="cjs65kcbg0007002vg1owvrlm" class="article-share-link">Share</a>
       
       
     </footer>
