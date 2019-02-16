@@ -163,7 +163,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/26/machoheader解析/" data-id="cjs65kcbg0007002vg1owvrlm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/26/machoheader解析/" data-id="cjs7bca830007o02vl8gtpdsm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -240,7 +240,119 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/01/22/AppStoreConnectAPI使用指南/" data-id="cjs65kcap0000002vcnawvox6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2019/01/22/AppStoreConnectAPI使用指南/" data-id="cjs7bca7i0001o02vm3bal7ak" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ARM汇编" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/12/16/ARM汇编/" class="article-date">
+  <time datetime="2018-12-16T10:00:14.000Z" itemprop="datePublished">2018-12-16</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/16/ARM汇编/">ARM汇编</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="0x00-通用寄存器"><a href="#0x00-通用寄存器" class="headerlink" title="0x00 通用寄存器"></a>0x00 通用寄存器</h1><ul>
+<li>64位：x0~x28.</li>
+<li>32位：w0~w28.（属于x0~x28低32位）</li>
+<li>x0~x7 通常用来传递函数的参数，更多的参数通过堆栈来传递。</li>
+<li>x0 通常存放函数的返回值。</li>
+</ul>
+<h2 id="0x01-其他寄存器"><a href="#0x01-其他寄存器" class="headerlink" title="0x01 其他寄存器"></a>0x01 其他寄存器</h2><ol>
+<li>pc(程序指针计数器)：<ul>
+<li>pc􏰍(Program Counter􏰑).</li>
+<li>记录CPU当前执行的命令。</li>
+<li>存储CPU正在执行命令的地址。</li>
+</ul>
+</li>
+<li>sp、fp（堆栈指针）：<ul>
+<li>sp􏰍(Stack Pointer􏰑)、fp(􏰍Frame Pointer)</li>
+<li>fp 为 x29。</li>
+</ul>
+</li>
+<li>lr(链接寄存器)：<ul>
+<li>lr(􏰍Link Register􏰑).</li>
+<li>lr 为 x30.</li>
+<li>存储函数的返回地址。</li>
+</ul>
+</li>
+<li>cpsr、spsr(程序状态寄存器)：<ul>
+<li>cpsr(􏰍Current Program Status Register􏰑)、spsr􏰍(Saved Program Status Register􏰑)</li>
+<li>spsr 在异常状态下使用。</li>
+</ul>
+</li>
+<li>wzr、xzr(零寄存器，里面存的值为0)<ul>
+<li>wzr(32位， word Zero Register)</li>
+<li>xzr(64位)</li>
+</ul>
+</li>
+</ol>
+<h2 id="0x02-常用的汇编指令"><a href="#0x02-常用的汇编指令" class="headerlink" title="0x02 常用的汇编指令"></a>0x02 常用的汇编指令</h2><ol>
+<li><p>mov<br> <img src="https://i.imgur.com/oiVveko.png" alt="屏幕快照 2019-02-16 下午5.33.29"></p>
+</li>
+<li><p>ret</p>
+<ul>
+<li>函数返回。</li>
+<li>将 lr(x30)寄存器的值赋值给 pc 寄存器。</li>
+</ul>
+</li>
+<li><p>ADD<br> <img src="https://i.imgur.com/kmpET4O.png" alt="屏幕快照 2019-02-16 下午5.31.20"></p>
+</li>
+<li><p>SUB<br> <img src="https://i.imgur.com/ghkRxvm.png" alt="屏幕快照 2019-02-16 下午5.30.19"></p>
+</li>
+<li><p>CMP<br> <img src="https://i.imgur.com/tBy00rn.png" alt="屏幕快照 2019-02-16 下午5.28.50"></p>
+</li>
+<li><p>B<br> <img src="https://i.imgur.com/V7iJsRa.png" alt="屏幕快照 2019-02-16 下午5.26.24"></p>
+</li>
+<li>BL<br> <img src="https://i.imgur.com/KSNKjmY.png" alt="屏幕快照 2019-02-16 下午5.27.29"></li>
+</ol>
+<h2 id="0x03-内存操作"><a href="#0x03-内存操作" class="headerlink" title="0x03 内存操作"></a>0x03 内存操作</h2><ol>
+<li>load（从内存中读取数据）<ul>
+<li>ldr、ldur</li>
+<li>ldp</li>
+</ul>
+</li>
+<li>store（）<ul>
+<li>str、stur</li>
+<li>stp</li>
+</ul>
+</li>
+</ol>
+<h2 id="0x04条件域"><a href="#0x04条件域" class="headerlink" title="0x04条件域"></a>0x04条件域</h2><ul>
+<li>EQ:􏰌equal􏰙􏱈􏱥 相等</li>
+<li>NE􏰌:not equal􏰙􏱦􏱈􏱥 不相等</li>
+<li>GT:􏰌great than􏰙􏱧􏰏 大于</li>
+<li>GE􏰌:greate equal􏰙􏱧􏰏􏱥􏰏 大于等于</li>
+<li>LT:􏰌less than􏰙􏱨􏰏 小于</li>
+<li>LE:􏰌less equal􏰙􏱨􏰏􏱥􏰏 小于等于</li>
+</ul>
+<h2 id="生成汇编方式"><a href="#生成汇编方式" class="headerlink" title="生成汇编方式"></a>生成汇编方式</h2><p>xcrun –sdk iphoneos clang -S -arch arm64 main.c -o main.s</p>
+<h1 id="附录："><a href="#附录：" class="headerlink" title="附录："></a>附录：</h1><p><a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.subset.architecture.reference/index.html" target="_blank" rel="noopener">Arm®v8-M Architecture Reference Manual<br>Reference Manual</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2018/12/16/ARM汇编/" data-id="cjs7bca7b0000o02vralss8px" class="article-share-link">Share</a>
       
       
     </footer>
@@ -299,7 +411,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/12/04/基于Hikari的代码混淆实现/" data-id="cjs65kcb10005002vywrh2xn6" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/12/04/基于Hikari的代码混淆实现/" data-id="cjs7bca7n0004o02vamkgozq2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -379,7 +491,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/10/15/objc-msgSend/" data-id="cjs65kcbf0006002v8rqrp64v" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/10/15/objc-msgSend/" data-id="cjs7bca840008o02vlvidqlk3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -437,7 +549,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/09/13/Xcode10踩坑记录/" data-id="cjs65kcau0001002vzt6d55sm" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/09/13/Xcode10踩坑记录/" data-id="cjs7bca7k0002o02vkj6vhx64" class="article-share-link">Share</a>
       
       
     </footer>
@@ -480,7 +592,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/08/17/XcodeServer使用指南/" data-id="cjs65kcaw0002002vsidty0km" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/08/17/XcodeServer使用指南/" data-id="cjs7bca7m0003o02vx0v0fz92" class="article-share-link">Share</a>
       
       
     </footer>
@@ -534,7 +646,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/08/16/搭建指南/" data-id="cjs65kcay0003002v9c6qq4po" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/08/16/搭建指南/" data-id="cjs7bca7o0005o02vdfrgi0fe" class="article-share-link">Share</a>
       
       
     </footer>
@@ -668,7 +780,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2018/05/23/结构体struct填充字节的问题/" data-id="cjs65kcb00004002vcycmw2su" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2018/05/23/结构体struct填充字节的问题/" data-id="cjs7bca7q0006o02v7v9caf4y" class="article-share-link">Share</a>
       
       
     </footer>
@@ -717,15 +829,15 @@
           </li>
         
           <li>
+            <a href="/2018/12/16/ARM汇编/">ARM汇编</a>
+          </li>
+        
+          <li>
             <a href="/2018/12/04/基于Hikari的代码混淆实现/">基于Hikari的代码混淆实现</a>
           </li>
         
           <li>
             <a href="/2018/10/15/objc-msgSend/">objc_msgSend</a>
-          </li>
-        
-          <li>
-            <a href="/2018/09/13/Xcode10踩坑记录/">Xcode10踩坑记录</a>
           </li>
         
       </ul>
